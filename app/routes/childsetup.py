@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
-from app.config import get_db_connection
+# from app.config import get_db_connection
+from app import db
 from datetime import date
 
 children_bp = Blueprint(
