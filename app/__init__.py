@@ -1,4 +1,5 @@
 from flask import Flask
+from app.config import Config
 
 def create_app():
     app = Flask(
@@ -7,6 +8,8 @@ def create_app():
         template_folder="../templates"
     )
 
+    app.config.from_object(Config)
+    
     from app.routes.home import home_bp
     from app.routes.attendance import attendance_bp
     from app.routes.childsetup import children_bp
