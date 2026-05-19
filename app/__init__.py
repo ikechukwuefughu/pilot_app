@@ -1,6 +1,8 @@
 from flask import Flask
 from app.config import Config
+from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
 def create_app():
     app = Flask(
         __name__,
@@ -9,6 +11,9 @@ def create_app():
     )
 
     app.config.from_object(Config)
+
+    #Initialize database
+    db.init_app(app)
     
     from app.routes.home import home_bp
     from app.routes.attendance import attendance_bp
