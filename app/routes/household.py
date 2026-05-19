@@ -98,7 +98,7 @@ def save_household():
     except Exception as e:
         conn.rollback()
         current_app.logger.exception("Household save failed")
-        return jsonify({"success": False, "error": "Unable to save household."}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
     finally:
         conn.close()
 
