@@ -13,6 +13,11 @@ def household():
     return render_template("registration/household/household.html")
 
 
+@household_bp.route("/debug-db")
+def debug_db():
+    import os
+    return os.getenv("DATABASE_URL")
+    
 # -----------------------------------------------------------
 # CREATE / UPDATE HOUSEHOLD + PARENTS
 # -----------------------------------------------------------
