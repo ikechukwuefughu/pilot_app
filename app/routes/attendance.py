@@ -11,7 +11,8 @@ Features:
 """
 
 from flask import Blueprint, render_template, request, jsonify
-from app.config import get_db_connection
+# from app.config import get_db_connection
+from app import db
 
 # Create the Attendance Blueprint
 attendance_bp = Blueprint("attendance", __name__)
