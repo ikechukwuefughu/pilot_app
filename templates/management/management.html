@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+
+{% block title %}Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/educators.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+
+    <!-- ================= HEADER ================= -->
+    <div class="page-header">
+        <div class="page-title">Management Dashboard</div>
+
+        <div class="top-actions">
+            <button class="btn-success" data-modal="educatorModal">Add a New Educator</button>
+            <button class="btn-success" data-modal="assignroomModal">Assign Educator Room(s)</button>
+            <button class="btn-primary" id="showChildrenBtn">View Children Assigned Rooms</button>
+            <button class="btn-primary" id="showPersonnelBtn">View Personnel Assigned Rooms</button>
+        </div>
+
+        <div class="text-end">
+                <h5 class="mb-1" id="currentDate"></h5>
+                <small class="text-muted">Management Dashboard</small>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-label">Branches</div>
+            <div class="stat-value" id="branchCount">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Rooms</div>
+            <div class="stat-value" id="roomCount">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Educators</div>
+            <div class="stat-value" id="educatorCount">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Children</div>
+            <div class="stat-value" id="childCount">0</div>
+        </div>
+
+    </div>
+    <!-- ================= BRANCH + ROOM GRID ================= -->
+<div class="management-grid">
+
+    <!-- ================= BRANCHES ================= -->
+    <div class="table-card">
+
+        <div class="card-header">
+            <h3>Branches</h3>
+
+            <button
+                class="btn-success"
+                data-modal="branchModal">
+                Add Branch
+            </button>
+        </div>
+
+        <select
+            id="branchList"
+            class="form-select compact-list"
+            size="1">
+        </select>
+
+    </div>
+
+    <!-- ================= ROOMS ================= -->
+    <div class="table-card">
+
+        <div class="card-header">
+            <h3>Rooms</h3>
+
+            <button
+                class="btn-success"
+                data-modal="roomModal">
+                Add Room
+            </button>
+        </div>
+
+        <select
+            id="roomList"
+            class="form-select compact-list"
+            size="1">
+        </select>
+
+    </div>
+
+</div>
+
+    <!-- ================= PERSONNEL TABLE ================= -->
+    <div class="table-card" id="personnelTableCard">
+        <div class="card-header">
+            <h3>Personnel Management</h3>
+        </div>
+
+        <table class="educator-table">
+
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Assigned Room(s)</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+
+            <tbody id="educatorTable"></tbody>
+
+        </table>
+
+    </div>
+
+    <!-- ================= CHILDREN TABLE ================= -->
+    <div class="table-card hidden" id="childTableCard">
+
+        <div class="card-header">
+            <h3>Children Management</h3>
+        </div>
+
+        <table class="educator-table">
+
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Assigned Room</th>
+                    <th>Contract Type</th>
+                    <th>Contract Status</th>
+                    <th>Date of Birth</th>
+                    <th>Household</th>
+                    <th>Parent</th>
+                    <th>Phone</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody id="childTable"></tbody>
+
+        </table>
+
+    </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- MODALS (PRODUCTION PATTERN) -->
+<!-- ===================================================== -->
+
+<!-- BRANCH MODAL -->
+<div id="branchModal" class="modal hidden">
+
+    <div class="modal-content modal-sm">
+
+        <h3>Add a Branch</h3>
+
+        <form id="branchForm">
+
+            <div class="form-group">
+
+                <label for="branchName">
+                    Branch Name
+                </label>
+
+                <input
+                    type="text"
+                    id="branchName"
+                    placeholder="Enter branch name"
+                    required>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="submit"
+                    class="btn-success">
+
+                    Save Branch
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ROOM MODAL -->
+<div id="roomModal" class="modal hidden">
+
+    <div class="modal-content modal-md">
+
+        <h3>Add a Room</h3>
+
+        <form id="roomForm">
+
+            <div class="form-grid">
+
+                <!-- BRANCH -->
+                <div class="form-group">
+
+                    <label for="roomBranch">
+                        Branch
+                    </label>
+
+                    <select id="roomBranch"></select>
+
+                </div>
+
+                <!-- ROOM NAME -->
+                <div class="form-group">
+
+                    <label for="roomName">
+                        Room Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="roomName"
+                        placeholder="Enter room name">
+
+                </div>
+
+                <!-- ROOM TYPE -->
+                <div class="form-group">
+
+                    <label for="roomType">
+                        Room Type
+                    </label>
+
+                    <select id="roomType">
+
+                        <option value="toddlers">
+                            Toddlers
+                        </option>
+
+                        <option value="age_3_5">
+                            Age 3–5
+                        </option>
+
+                        <option value="age_6_10">
+                            Age 6–10
+                        </option>
+
+                        <option value="age_11_above">
+                            Age 11 and Above
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- CAPACITY -->
+                <div class="form-group">
+
+                    <label for="roomCapacity">
+                        Capacity
+                    </label>
+
+                    <input
+                        type="number"
+                        id="roomCapacity"
+                        placeholder="Enter capacity">
+
+                </div>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="submit"
+                    class="btn-success">
+
+                    Save Room
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- EDUCATOR MODAL -->
+<div id="educatorModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <h3 id="educatorModalTitle">
+            Add an Educator
+        </h3>
+
+        <form id="educatorForm">
+
+            <input
+                type="hidden"
+                id="educatorId">
+
+            <!-- FULL NAME -->
+            <div class="form-group">
+                <label for="educatorName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="educatorName"
+                    placeholder="Full Name"
+                    required>
+            </div>
+
+            <!-- PHONE -->
+            <div class="form-group">
+                <label for="educatorPhone">
+                    Phone
+                </label>
+
+                <input
+                    type="text"
+                    id="educatorPhone"
+                    placeholder="Phone">
+            </div>
+
+            <!-- EMAIL -->
+            <div class="form-group">
+                <label for="educatorEmail">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="educatorEmail"
+                    placeholder="Email">
+            </div>
+
+            <!-- ROLE -->
+            <div class="form-group">
+                <label for="educatorRole">
+                    Role
+                </label>
+
+                <select id="educatorRole">
+
+                    <option value="educator">
+                        Educator
+                    </option>
+
+                    <option value="assistant">
+                        Assistant
+                    </option>
+
+                    <option value="manager">
+                        Manager
+                    </option>
+
+                    <option value="admin">
+                        Admin
+                    </option>
+
+                </select>
+            </div>
+
+            <!-- START DATE -->
+            <div class="form-group">
+
+                <label for="educatorStartDate">
+                    Start Date
+                </label>
+
+                <input
+                    type="date"
+                    id="educatorStartDate">
+
+            </div>
+
+            <!-- END DATE -->
+            <div class="form-group">
+
+                <label for="educatorEndDate">
+                    End Date
+                </label>
+
+                <input
+                    type="date"
+                    id="educatorEndDate">
+
+            </div>
+
+            <!-- SAVE BUTTON -->
+            <button
+                type="submit"
+                class="btn-success">
+
+                Save
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ATTENDANCE MODAL -->
+<div id="attendanceModal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Mark Attendance</h3>
+
+        <select id="attEducator"></select>
+        <input id="attDate" type="date">
+        <input id="attIn" type="time">
+        <input id="attOut" type="time">
+
+        <button id="btnSaveAttendance" class="btn-success">Save</button>
+    </div>
+</div>
+
+<!-- ASSIGN ROOM MODAL -->
+<div id="assignroomModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <h3>Assign a Room to Educator</h3>
+
+        <!-- EDUCATOR -->
+        <label>Educator</label>
+        <select id="assignEducator"></select>
+
+        <!-- BRANCH -->
+        <label>Branch</label>
+        <select id="assignBranch"></select>
+
+        <!-- ROOM -->
+        <label>Room</label>
+        <select id="assignRoom" multiple></select>
+
+        <button
+            id="btnSaveAssignment"
+            class="btn-success">
+            Save
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ================= CHILD ROOM MODAL ================= -->
+<div id="childRoomModal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <h3 id="childRoomNameLabel">
+            Child Room Assignment
+        </h3>
+        <input type="hidden" id="childAssignChild">
+        <!-- <input
+            type="hidden"
+            id="childAssignChild"
+        > -->
+
+        <!-- Branch -->
+        <label>Select Branch</label>
+
+        <select id="childAssignBranch">
+            <option value="">
+                Select Branch
+            </option>
+        </select>
+
+        <!-- Rooms -->
+        <label>Select Rooms</label>
+
+        <select
+            id="childAssignRoom"
+            multiple
+            size="8"
+        >
+            <option>
+                Select Branch First
+            </option>
+        </select>
+
+        <!-- Buttons -->
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="btn-primary"
+                id="btnSaveChildRooms"
+            >
+                Save
+            </button>
+
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="closeAllModals()"
+            >
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/management.js') }}"></script>
+{% endblock %}

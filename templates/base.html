@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Fiona Pilot App{% endblock %}</title>
+
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h2>Fiona's Creche</h2>
+            <p>Management System</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('home.home') }}" class="{% if request.endpoint == 'home.home' %}active{% endif %}">Home</a></li>
+            <li class="has-submenu">
+                <a href="#">Registration</a>
+                <ul class="submenu">
+                    <li><a href="{{ url_for('household.household') }}">Household Setup</a></li>
+                    <li><a href="{{ url_for('children.child_setup') }}">Child Setup</a></li>
+                </ul>
+            </li>
+
+            <li><a href="{{ url_for('management.management') }}" class="{% if request.endpoint == 'management.management' %}active{% endif %}">Dashboard</a></li>
+            <li><a href="{{ url_for('attendance.attendance') }}" class="{% if request.endpoint == 'attendance.attendance' %}active{% endif %}">Attendance</a></li>
+            <!-- <li><a href="{{ url_for('management.management') }}" class="{% if request.endpoint == 'management.management' %}active{% endif %}">Management</a></li> -->
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Settings</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

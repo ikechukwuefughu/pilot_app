@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"href="{{ url_for('static', filename='css/forms.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/attendance.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="attendance-page">
+    <!-- ================= HEADER ================= -->
+    <div class="page-header">
+        <div class="header-left">
+
+        <div class="page-title">
+            <h1>Attendance Management</h1>
+            <p>Educator Session-Based Register</p>
+        </div>
+
+        <div class="text-end">
+            <h5 class="mb-1" id="currentDate"></h5>
+            <small class="text-muted">
+                Live Classroom Register
+            </small>
+        </div>
+
+    </div>
+
+        <div class="top-actions">
+            <button class="btn-success" data-modal="sessionsModal">Manage Sessions</button>
+            <button class="btn-primary" id="showChildrenBtn">View Children Attendance</button>
+            <button class="btn-primary" id="showPersonnelBtn">View Personnel Attendance</button>
+        </div>
+
+    </div>
+
+    <!-- ================= STATS ================= -->
+    <div class="stats-container">
+
+        <div class="stat-card">
+            <h3 id="totalChildren">0</h3>
+            <p>Total Children</p>
+        </div>
+
+        <div class="stat-card">
+            <h3 id="checkedInCount">0</h3>
+            <p>Total Checked In</p>
+        </div>
+
+        <div class="stat-card">
+            <h3 id="checkedOutCount">0</h3>
+            <p>Total Checked Out</p>
+        </div>
+
+    </div>
+
+    <!-- ================= SESSION CONTROL ATTENDANCE FILTERS ================= -->
+    <div class="filter-card">
+
+        <div class="card-header">
+            <h3>Attendance Session Setup</h3>
+        </div>
+
+        <div class="filter-grid">
+
+            <!-- DATE -->
+            <div class="form-group">
+                <label for="attendanceDate">
+                    Attendance Date
+                </label>
+
+                <input
+                    type="date"
+                    id="attendanceDate">
+            </div>
+
+            <!-- EDUCATOR -->
+            <div class="form-group">
+                <label for="attendanceEducator">
+                    Educator
+                </label>
+
+                <select id="attendanceEducator">
+                    <option value="">
+                        Select Educator
+                    </option>
+                </select>
+            </div>
+
+            <!-- ROOM -->
+             <div class="form-group">
+                <label for="attendanceRoom">
+                    Room
+                </label>
+
+                <input
+                    type="text"
+                    id="attendanceRoom"
+                    class="form-control"
+                    readonly
+                    placeholder="Room will appear after selecting educator"
+                >
+                <input type="hidden" id="attendanceRoomId">
+            </div>
+
+            <!-- SESSION -->
+            <div class="form-group">
+                <label for="attendanceSession">
+                    Session
+                </label>
+
+                <input
+                    type="text"
+                    id="attendanceSession"
+                    class="form-control"
+                    readonly
+                    placeholder="Session will appear after selecting educator"
+                >
+                <input type="hidden" id="sessionId">
+                <input type="hidden" id="sessionRoomId">
+                <input type="hidden" id="currentSessionId">
+                <input type="hidden" id="attendanceEducatorId">
+
+            </div>
+                
+            <div class="form-group action-group">
+
+                <label>&nbsp;</label>
+
+                <button
+                    class="btn-secondary full-width-btn"id="clearAttendanceBtn">
+                    Clear Filter
+                </button>
+
+                <button id="saveRegisterBtn" class="btn-success" disabled>
+                    Save Attendance Register
+                </button>
+
+            </div>
+        </div>
+
+        <!-- ================= SEARCH ================= -->
+        <div class="mb-3">
+            <input type="text"
+                id="searchInput"
+                class="form-control"
+                placeholder="🔍 Search child...">
+        </div>
+    </div>
+
+    <!-- ================= ATTENDANCE REGISTER ================= -->
+    <div class="table-card">
+
+        <div class="card-header">
+            <h3>Attendance Register</h3>
+        </div>
+        <div class="save-status">
+            <small id="lastSavedAt">
+                Not saved yet
+            </small>
+        </div>
+
+        <table class="educator-table">
+
+            <thead>
+                <tr>
+                    <input type="hidden" id="attendanceRoomId">
+                    <th>Child</th>
+                    <th>Room</th>
+                    <th>Status</th>
+                    <th>Check In Time</th>
+                    <th>Check Out Time</th>
+                    <th>Pickup By</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+
+            <tbody id="attendanceTable">
+                <tr>
+                    <td colspan="7" class="empty-row">
+                        No Attendance Loaded
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+<!-- ===================================================== -->
+<!-- MODALS (PRODUCTION PATTERN) -->
+<!-- ===================================================== -->
+
+<!-- SESSION MODAL -->
+<div id="sessionsModal" class="modal hidden">
+
+    <div class="modal-content modal-sm">
+
+        <h3>Add Session</h3>
+
+        <form id="sessionForm">
+
+            <!-- EDUCATOR -->
+            <div class="form-group">
+                <label for="sessionEducator">
+                    Educator
+                </label>
+
+                <select id="sessionEducator" required>
+                    <option value="">
+                        Select Educator
+                    </option>
+                </select>
+            </div>
+
+            <!-- ROOM -->
+            <div class="form-group">
+                <label for="sessionRoom">
+                    Room
+                </label>
+                
+                <input
+                    type="text"
+                    id="sessionRoom"
+                    readonly
+                    class="form-control">
+
+                <input
+                    type="hidden"
+                    id="sessionRoomId">
+            </div>
+
+            <!-- SESSION TYPE -->
+            <div class="form-group">
+                <label for="sessionType">
+                    Session Type
+                </label>
+
+                <select id="sessionType" required>
+                    <option value="">Select Type</option>
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Full Day">Full Day</option>
+                </select>
+            </div>
+
+            <!-- START TIME -->
+            <div class="form-group">
+                <label for="startTime">
+                    Start Time
+                </label>
+
+                <input
+                    type="time"
+                    id="startTime">
+            </div>
+
+            <!-- END TIME -->
+            <div class="form-group">
+                <label for="endTime">
+                    End Time
+                </label>
+
+                <input
+                    type="time"
+                    id="endTime">
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="modal-actions">
+
+                <button type="submit" class="btn-success">
+                    Save Session
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/attendance.js') }}"></script>
+{% endblock %}

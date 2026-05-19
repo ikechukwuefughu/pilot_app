@@ -1,0 +1,472 @@
+/* =========================================================
+   GLOBAL LAYOUT
+========================================================= */
+
+.page-wrapper {
+    padding: 24px;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.top-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.filter-card,
+.table-card,
+.form-card,
+.stat-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.table-card,
+.filter-card,
+.form-card {
+    margin-bottom: 24px;
+}
+
+/* =========================================================
+   STATS GRID
+========================================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.stat-value {
+    font-size: 34px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* =========================================================
+   MANAGEMENT GRID
+========================================================= */
+
+.management-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+
+    .management-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* =========================================================
+   TABLES
+========================================================= */
+
+.educator-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.educator-table thead {
+    background: linear-gradient(135deg, #0b84c6, #08679a);
+    color: white;
+}
+
+.educator-table th {
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.educator-table td {
+    padding: 14px;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 14px;
+    color: #334155;
+}
+
+.educator-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.educator-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* =========================================================
+   STATUS BADGES
+========================================================= */
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-enabled {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-disabled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    align-items: end;
+}
+
+.search-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.search-row input {
+    flex: 1;
+}
+
+/* =========================================================
+   FORM LAYOUT
+========================================================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.form-group input,
+.form-group select,
+.search-row input,
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 14px;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.search-row input:focus,
+.modal-content input:focus,
+.modal-content select:focus {
+    outline: none;
+    border-color: #0b84c6;
+    box-shadow: 0 0 0 4px rgba(11, 132, 198, 0.12);
+}
+
+/* =========================================================
+   ROOM CHECKBOXES
+========================================================= */
+
+.room-checkboxes {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid #dbe2ea;
+    border-radius: 12px;
+    padding: 14px;
+    background: #f8fafc;
+}
+
+.room-checkboxes label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+/* =========================================================
+   COMPACT LISTS
+========================================================= */
+
+.compact-list {
+    width: 100%;
+    min-height: 42px;
+    font-size: 14px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    padding: 10px;
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+    padding: 20px;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 28px;
+    width: 100%;
+    max-width: 700px;
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.15);
+
+    animation: modalFade 0.2s ease;
+}
+
+.modal-content h3 {
+    margin-bottom: 24px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn-primary,
+.btn-success,
+.btn-secondary,
+.btn-danger {
+    border: none;
+    border-radius: 14px;
+    padding: 11px 18px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+/* PRIMARY */
+
+.btn-primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(37, 99, 235, 0.35);
+}
+
+/* SUCCESS */
+
+.btn-success {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: white;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(22, 163, 74, 0.35);
+}
+
+/* SECONDARY */
+
+.btn-secondary {
+    background: linear-gradient(135deg, #64748b, #475569);
+    color: white;
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.25);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(100, 116, 139, 0.35);
+}
+
+/* DANGER */
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(220, 38, 38, 0.35);
+}
+
+/* ACTIVE */
+
+.btn-primary:active,
+.btn-success:active,
+.btn-secondary:active,
+.btn-danger:active {
+    transform: scale(0.97);
+}
+
+/* DISABLED */
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* =========================================================
+   WORKING HOURS
+========================================================= */
+
+.working-hours-box {
+    background: #f8fafc;
+    border-radius: 14px;
+    padding: 18px;
+}
+
+.working-hours-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+.hidden {
+    display: none;
+}
+
+.toggle-active {
+    transform: scale(0.98);
+    opacity: 0.92;
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes modalFade {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
