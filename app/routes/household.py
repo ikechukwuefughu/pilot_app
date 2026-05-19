@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, current_app
-# from app.config import get_db_connection
+from app.config import get_db_connection
 from app import db
 
 household_bp = Blueprint("household", __name__)
