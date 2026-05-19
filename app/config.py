@@ -24,7 +24,12 @@
 #     conn.execute("PRAGMA journal_mode=WAL;")
 #     return conn
 
+import pyodbc
 import os
+
+def get_db_connection():
+    conn = pyodbc.connect(os.getenv("DATABASE_URL"))
+    return conn
 
 class Config:
     # Flask security key
