@@ -1,3 +1,6 @@
+from app import db
+from sqlalchemy import func
+
 class ChildMedicalInfo(db.Model):
     __tablename__ = "child_medical_info"
     __table_args__ = {"schema": "dbo"}
