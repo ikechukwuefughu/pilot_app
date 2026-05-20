@@ -22,7 +22,5 @@ class ChildMedicalInfo(db.Model):
             "medical_id": self.medical_id,
             "child_id": self.child_id,
             "allergies": self.allergies,
-            "medical_notes": self.medical_notes,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+            "medical_notes": self.medical_notes
         }
