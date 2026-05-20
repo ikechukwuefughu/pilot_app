@@ -24,3 +24,14 @@ class ChildParentRelationship(db.Model):
     legal_guardian = db.Column(db.Boolean, server_default=db.text("0"))
     authorized_pickup = db.Column(db.Boolean, server_default=db.text("1"))
     emergency_contact = db.Column(db.Boolean, server_default=db.text("1"))
+
+    def to_dict(self):
+    return {
+        "relationship_id": self.relationship_id,
+        "child_id": self.child_id,
+        "parent_id": self.parent_id,
+        "relationship_type": self.relationship_type,
+        "legal_guardian": self.legal_guardian,
+        "authorized_pickup": self.authorized_pickup,
+        "emergency_contact": self.emergency_contact
+    }
