@@ -9,12 +9,12 @@
 #     url_prefix="/children"
 # )
 
-# # ==========================================================
-# # PAGE
-# # ==========================================================
-# @children_bp.route("/")
-# def child_setup():
-#     return render_template("registration/children/child.html")
+# ==========================================================
+# PAGE
+# ==========================================================
+@children_bp.route("/")
+def child_setup():
+    return render_template("registration/children/child.html")
 
 
 # # ==========================================================
