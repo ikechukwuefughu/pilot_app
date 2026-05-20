@@ -22,3 +22,16 @@ class ChildContract(db.Model):
     subsidy_rate = db.Column(db.Float)
 
     status = db.Column(db.Unicode(50))
+
+    def to_dict(self):
+        return {
+            "contract_id": self.contract_id,
+            "child_id": self.child_id,
+            "contract_type": self.contract_type,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "end_date": self.end_date.isoformat() if self.end_date else None,
+            "agreed_hours_per_week": self.agreed_hours_per_week,
+            "hourly_rate": self.hourly_rate,
+            "subsidy_rate": self.subsidy_rate,
+            "status": self.status
+        }
