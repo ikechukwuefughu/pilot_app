@@ -1,22 +1,38 @@
-import sqlite3
+# app/models/parent.py
+from app import db
+from sqlalchemy import func
 
-conn = sqlite3.connect("creche.db")
-cursor = conn.cursor()
+class Parent(db.Model):
+    __tablename__ = "parent"
+    __table_args__ = {"schema": "dbo"}  # maps to dbo.parent
 
-cursor.execute("""
+    parent_id = db.Column(db.Integer, primary_key=True)
 
-CREATE TABLE "parent" (
-	"created_at"	TEXT DEFAULT (datetime('now')),
-	"parent_id"	INTEGER,
-	"household_id"	INTEGER,
-	"first_name"	TEXT,
-	"last_name"	TEXT,
-	"phone"	TEXT,
-	"email"	TEXT,
-	PRIMARY KEY("parent_id" AUTOINCREMENT),
-	FOREIGN KEY("household_id") REFERENCES "household"("household_id")
-);
-""")
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        server_default=func.sysutcdatetime(),  # DEFAULT SYSUTCDATETIME()
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        nullable=True,
+    )
 
-conn.commit()
-conn.close()
+    household_id = db.Column(
+        db.Integer,
+        db.ForeignKey("dbo.household.household_id", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+        index=True,  # IX_parent_household_id equivalent
+    )
+
+    first_name = db.Column(db.Unicode(100), nullable=False)
+    last_name  = db.Column(db.Unicode(100), nullable=False)
+    phone      = db.Column(db.Unicode(20))
+    email      = db.Column(db.Unicode(254))
+    is_primary = db.Column(
+        db.Boolean,
+        nullable=False,
+        server_default=db.text("0"),  # BIT with DEFAULT(0)
+    )
+
+    household = db.relationship("Household", back_populates="parents")
