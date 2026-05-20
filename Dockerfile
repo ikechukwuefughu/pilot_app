@@ -23,10 +23,8 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Use PORT from environment (Render sets this), fallback 8000 locally
 CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT:-8000} run:app"]
