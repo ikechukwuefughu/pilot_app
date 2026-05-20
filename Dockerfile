@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 # Add Microsoft package repo for Debian 12 (bookworm)
-RUN curl [packages.microsoft.com](https://packages.microsoft.com/keys/microsoft.asc) | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg \
-  && echo "deb [arch=amd64] [packages.microsoft.com](https://packages.microsoft.com/debian/12/prod) bookworm main" > /etc/apt/sources.list.d/mssql-release.list
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg \
+  && echo "deb [arch=amd64] https://packages.microsoft.com/debian/12/prod bookworm main" > /etc/apt/sources.list.d/mssql-release.list
 
 
 # Install ODBC Driver 18 for SQL Server
