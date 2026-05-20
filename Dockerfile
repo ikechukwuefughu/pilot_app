@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
   && rm -rf /var/lib/apt/lists/*
 
-# Add Microsoft package repo (Debian 12 / bookworm)
+# Add Microsoft package repo for Debian 12 (bookworm)
 RUN curl [packages.microsoft.com](https://packages.microsoft.com/keys/microsoft.asc) | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg \
   && echo "deb [arch=amd64] [packages.microsoft.com](https://packages.microsoft.com/debian/12/prod) bookworm main" > /etc/apt/sources.list.d/mssql-release.list
 
@@ -28,5 +28,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# For Render: gunicorn should bind to $PORT; Render sets this env var.
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "run:app"]
+# Use PORT from environment (Render sets this), fallback 8000 locally
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT:-8000} run:app"]
