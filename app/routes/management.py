@@ -2,11 +2,11 @@
 # # from app.config import get_db_connection
 # from app import db
 
-# management_bp = Blueprint(
-#     "management",
-#     __name__,
-#     url_prefix="/management"
-# )
+management_bp = Blueprint(
+    "management",
+    __name__,
+    url_prefix="/management"
+)
 
 # ==========================================================
 # PAGE
