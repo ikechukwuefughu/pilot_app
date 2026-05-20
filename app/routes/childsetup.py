@@ -72,9 +72,6 @@ def save_children():
             contract_id = contract.get("contract_id")
 
             if contract_id:
-            contract_id = contract.get("contract_id")
-
-            if contract_id:
                 contract_obj = ChildContract.query.get(contract_id)
             else:
                 contract_obj = ChildContract(child_id=child_id)
