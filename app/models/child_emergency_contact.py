@@ -19,3 +19,15 @@ class ChildEmergencyContact(db.Model):
     phone = db.Column(db.Unicode(50))
 
     authorized_pickup = db.Column(db.Boolean, server_default=db.text("0"))
+
+    def to_dict(self):
+        return {
+            "emergency_contact_id": self.emergency_contact_id,
+            "child_id": self.child_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "relationship_to_child": self.relationship_to_child,
+            "phone": self.phone,
+            "authorized_pickup": self.authorized_pickup,
+            "priority_order": self.priority_order
+        }
