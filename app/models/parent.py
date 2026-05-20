@@ -1,4 +1,3 @@
-# app/models/parent.py
 from app import db
 from sqlalchemy import func
 
