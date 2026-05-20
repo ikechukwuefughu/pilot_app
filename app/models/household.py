@@ -33,3 +33,10 @@ class Household(db.Model):
         passive_deletes=True,  # respects ON DELETE CASCADE on FK
         lazy="selectin",
     )
+
+    # Relationship to Child
+    children = db.relationship(
+        "Child",
+        back_populates="household",
+        lazy="selectin"
+    )
