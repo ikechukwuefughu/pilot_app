@@ -1,23 +1,41 @@
-import sqlite3
+from app import db
+from sqlalchemy import func
 
-conn = sqlite3.connect("creche.db")
-cursor = conn.cursor()
+class Child(db.Model):
+    __tablename__ = "child"
+    __table_args__ = {"schema": "dbo"}
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS child (
-    created_at TEXT DEFAULT (datetime('now')),
-    child_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    household_id INTEGER,
-    first_name TEXT,
-    last_name TEXT,
-    date_of_birth TEXT,
-    ppsn TEXT NOT NULL,
-    ecce_eligible INTEGER NOT NULL CHECK (ecce_eligible IN (0, 1)),
-    start_date TEXT,
-    end_date TEXT,
-    FOREIGN KEY (household_id) REFERENCES household (household_id)
-);
-""")
+    child_id = db.Column(db.Integer, primary_key=True)
 
-conn.commit()
-conn.close()
+    created_at = db.Column(
+        db.DateTime,
+        server_default=func.sysutcdatetime(),
+        nullable=False
+    )
+
+    household_id = db.Column(
+        db.Integer,
+        db.ForeignKey("dbo.household.household_id"),
+        nullable=False,
+        index=True
+    )
+
+    first_name = db.Column(db.Unicode(100), nullable=False)
+    last_name = db.Column(db.Unicode(100), nullable=False)
+
+    date_of_birth = db.Column(db.Date)
+    ppsn = db.Column(db.Unicode(50))
+
+    ecce_eligible = db.Column(
+        db.Boolean,
+        server_default=db.text("0"),
+        nullable=False
+    )
+
+    start_date = db.Column(db.Date)
+
+    chick_code = db.Column(db.Unicode(100), unique=True)
+
+    # relationships
+    household = db.relationship("Household", back_populates="children")
+    attendance = db.relationship("ChildAttendance", back_populates="child", cascade="all, delete")
