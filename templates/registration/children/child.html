@@ -16,45 +16,74 @@
 <div class="card-box">
 
     <h1 class="mb-3">Child Management</h1>
+
     <p class="text-muted mb-4">
-        Select a household, then manage children and contracts.
+        Select a household, then manage children, contracts,
+        relationships, and emergency contacts.
     </p>
 
-    <!-- Toast Notifications -->
+    <!-- =========================================================
+         TOAST
+    ========================================================== -->
     <div class="toast align-items-center text-bg-info border-0 position-fixed bottom-0 end-0 m-3"
-         id="toast" role="alert" aria-live="assertive" aria-atomic="true">
+         id="toast"
+         role="alert"
+         aria-live="assertive"
+         aria-atomic="true">
+
         <div class="d-flex">
-            <div class="toast-body">Notice message</div>
+            <div class="toast-body">
+                Notice message
+            </div>
+
             <button type="button"
                     class="btn-close btn-close-white me-2 m-auto"
                     data-bs-dismiss="toast"
-                    aria-label="Close"></button>
+                    aria-label="Close">
+            </button>
         </div>
     </div>
 
-    <!-- ================= ACTIONS ================= -->
+    <!-- =========================================================
+         ACTIONS
+    ========================================================== -->
     <div class="mb-4 d-flex gap-2">
+
         <button id="refreshChildrenBtn"
                 type="button"
                 class="btn btn-outline-secondary">
-            <i class="fas fa-sync-alt me-1"></i>Refresh
+
+            <i class="fas fa-sync-alt me-1"></i>
+            Refresh
         </button>
+
     </div>
 
+    <!-- =========================================================
+         FORM
+    ========================================================== -->
     <form id="childForm">
 
-        <!-- ================= HOUSEHOLD ================= -->
+        <!-- =====================================================
+             HOUSEHOLD
+        ====================================================== -->
         <div class="form-section">
 
             <h4 class="mb-3">Household</h4>
 
-            <label class="form-label">Select Household</label>
+            <label class="form-label">
+                Select Household
+            </label>
 
             <select class="form-select mb-3"
                     id="householdSelect"
                     name="household_id"
                     required>
-                <option value="">Loading households...</option>
+
+                <option value="">
+                    Loading households...
+                </option>
+
             </select>
 
             <small class="text-muted">
@@ -63,28 +92,44 @@
 
         </div>
 
-        <!-- ================= PARENTS ================= -->
+        <!-- =====================================================
+             PARENTS PREVIEW
+        ====================================================== -->
         <div class="form-section">
 
-            <h4 class="mb-3">Parents / Guardians</h4>
+            <h4 class="mb-3">
+                Parents / Guardians
+            </h4>
 
-            <div id="parentPreviewContainer" class="text-muted">
+            <div id="parentPreviewContainer"
+                 class="text-muted">
+
                 Select a household to load parents...
+
             </div>
 
         </div>
 
-        <!-- ================= CHILDREN ================= -->
+        <!-- =====================================================
+             CHILDREN
+        ====================================================== -->
         <div class="form-section">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="mb-0">Children</h4>
+
+                <h4 class="mb-0">
+                    Children
+                </h4>
 
                 <button type="button"
                         class="btn btn-success"
                         id="addChildBtn">
-                    <i class="fas fa-plus me-1"></i>Add Child
+
+                    <i class="fas fa-plus me-1"></i>
+                    Add Child
+
                 </button>
+
             </div>
 
             <!-- CHILD CONTAINER -->
@@ -92,18 +137,27 @@
 
         </div>
 
-        <!-- ================= SUBMIT ================= -->
+        <!-- =====================================================
+             SUBMIT
+        ====================================================== -->
         <div class="mt-4 text-end">
+
             <button id="clearFormBtn"
                     type="button"
                     class="btn btn-outline-secondary me-2">
+
                 Clear
+
             </button>
 
-            <button class="btn btn-primary" type="submit">
+            <button class="btn btn-primary"
+                    type="submit">
+
                 <i class="fas fa-save me-2"></i>
                 Save Children & Contracts
+
             </button>
+
         </div>
 
     </form>
@@ -117,65 +171,111 @@
 
 <div class="card-box child-card mb-4 border">
 
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="child-title mb-0">Child</h5>
+
+        <h5 class="child-title mb-0">
+            Child
+        </h5>
 
         <button type="button"
                 class="btn btn-danger remove-child">
-            <i class="fas fa-minus me-1"></i>Remove
+
+            <i class="fas fa-minus me-1"></i>
+            Remove
+
         </button>
+
     </div>
 
     <input type="hidden" name="child_id[]">
 
-    <!-- ================= CHILD DETAILS ================= -->
+    <!-- ======================================================
+         CHILD DETAILS
+    ======================================================= -->
+    <h5 class="mb-3">
+        Child Details
+    </h5>
+
     <div class="row g-3">
 
         <div class="col-md-6">
-            <label class="form-label">First Name</label>
+
+            <label class="form-label">
+                First Name
+            </label>
+
             <input class="form-control"
                    name="child_first_name[]"
                    required>
+
         </div>
 
         <div class="col-md-6">
-            <label class="form-label">Last Name</label>
+
+            <label class="form-label">
+                Last Name
+            </label>
+
             <input class="form-control"
                    name="child_last_name[]"
                    required>
+
         </div>
 
         <div class="col-md-4">
-            <label class="form-label">DOB</label>
+
+            <label class="form-label">
+                DOB
+            </label>
+
             <input type="date"
                    class="form-control"
                    name="date_of_birth[]"
                    required>
+
         </div>
 
         <div class="col-md-4">
-            <label class="form-label">PPSN</label>
+
+            <label class="form-label">
+                PPSN
+            </label>
+
             <input class="form-control"
-                   name="ppsn[]"
-                   required>
+                   name="ppsn[]">
+
         </div>
 
         <div class="col-md-4">
-            <label class="form-label">CHICK Code</label>
+
+            <label class="form-label">
+                CHICK Code
+            </label>
+
             <input class="form-control"
-                   name="chick_code[]"
-                   required>
+                   name="chick_code[]">
+
         </div>
 
         <div class="col-md-6">
-            <label class="form-label">Start Date</label>
+
+            <label class="form-label">
+                Start Date
+            </label>
+
             <input type="date"
                    class="form-control"
                    name="child_start_date[]">
+
         </div>
 
         <div class="col-md-6 d-flex align-items-end">
+
             <div class="form-check">
+
                 <input type="checkbox"
                        class="form-check-input"
                        name="ecce_eligible[]">
@@ -183,73 +283,191 @@
                 <label class="form-check-label">
                     ECCE Eligible
                 </label>
+
             </div>
+
         </div>
 
     </div>
 
+    <!-- ======================================================
+         MEDICAL / ALLERGY
+    ======================================================= -->
     <hr class="my-4">
 
-    <!-- ================= CONTRACT ================= -->
-    <h5 class="mb-3">Contract</h5>
+    <h5 class="mb-3">
+        Medical & Safety Information
+    </h5>
+
+    <div class="row g-3">
+
+        <div class="col-md-6">
+
+            <label class="form-label">
+                Allergies
+            </label>
+
+            <textarea class="form-control"
+                      rows="2"
+                      name="allergies[]"></textarea>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <label class="form-label">
+                Medical Notes
+            </label>
+
+            <textarea class="form-control"
+                      rows="2"
+                      name="medical_notes[]"></textarea>
+
+        </div>
+
+    </div>
+
+    <!-- ======================================================
+         RELATIONSHIPS
+    ======================================================= -->
+    <hr class="my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h5 class="mb-0">
+            Parent Relationships
+        </h5>
+
+    </div>
+
+    <div class="parent-relationship-container"></div>
+
+    <!-- ======================================================
+         EMERGENCY CONTACTS
+    ======================================================= -->
+    <hr class="my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h5 class="mb-0">
+            Emergency Contacts
+        </h5>
+
+        <button type="button"
+                class="btn btn-outline-primary add-emergency-contact">
+
+            <i class="fas fa-plus me-1"></i>
+            Add Contact
+
+        </button>
+
+    </div>
+
+    <div class="emergency-contact-container"></div>
+
+    <!-- ======================================================
+         CONTRACT
+    ======================================================= -->
+    <hr class="my-4">
+
+    <h5 class="mb-3">
+        Contract
+    </h5>
 
     <div class="row g-3">
 
         <div class="col-md-4">
-            <label class="form-label">Type</label>
+
+            <label class="form-label">
+                Type
+            </label>
 
             <select class="form-select"
                     name="contract_type[]"
                     required>
-                <option value="">Select</option>
-                <option value="ECCE">ECCE</option>
-                <option value="NCS">NCS</option>
-                <option value="PRIVATE">PRIVATE</option>
+
+                <option value="">
+                    Select
+                </option>
+
+                <option value="ECCE">
+                    ECCE
+                </option>
+
+                <option value="NCS">
+                    NCS
+                </option>
+
+                <option value="PRIVATE">
+                    PRIVATE
+                </option>
+
             </select>
+
         </div>
 
         <div class="col-md-4">
-            <label class="form-label">Start Date</label>
+
+            <label class="form-label">
+                Start Date
+            </label>
 
             <input type="date"
                    class="form-control"
                    name="contract_start_date[]"
                    required>
+
         </div>
 
         <div class="col-md-4">
-            <label class="form-label">End Date</label>
+
+            <label class="form-label">
+                End Date
+            </label>
 
             <input type="date"
                    class="form-control"
                    name="contract_end_date[]">
+
         </div>
 
         <div class="col-md-4">
-            <label class="form-label">Hours / Week</label>
+
+            <label class="form-label">
+                Hours / Week
+            </label>
 
             <input type="number"
                    step="0.5"
                    class="form-control"
                    name="agreed_hours_per_week[]">
+
         </div>
 
         <div class="col-md-4">
-            <label class="form-label">Hourly Rate (Euros)</label>
+
+            <label class="form-label">
+                Hourly Rate (Euros)
+            </label>
 
             <input type="number"
                    step="0.01"
                    class="form-control"
                    name="hourly_rate[]">
+
         </div>
 
         <div class="col-md-4">
-            <label class="form-label">Subsidy (Euros)</label>
+
+            <label class="form-label">
+                Subsidy (Euros)
+            </label>
 
             <input type="number"
                    step="0.01"
                    class="form-control"
                    name="subsidy_rate[]">
+
         </div>
 
     </div>
@@ -257,6 +475,147 @@
 </div>
 
 </template>
+
+<!-- ==========================================================
+     RELATIONSHIP TEMPLATE
+========================================================== -->
+<template id="relationshipTemplate">
+
+<div class="border rounded p-3 mb-3 relationship-card">
+
+    <div class="row g-3">
+
+        <div class="col-md-4">
+
+            <label class="form-label">
+                Parent / Guardian
+            </label>
+
+            <select class="form-select relationship-parent">
+            </select>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <label class="form-label">
+                Relationship
+            </label>
+
+            <select class="form-select relationship-type">
+
+                <option value="Mother">Mother</option>
+                <option value="Father">Father</option>
+                <option value="Guardian">Guardian</option>
+                <option value="Grandparent">Grandparent</option>
+                <option value="Aunt">Aunt</option>
+                <option value="Uncle">Uncle</option>
+
+            </select>
+
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+
+            <div class="form-check me-3">
+
+                <input type="checkbox"
+                       class="form-check-input legal-guardian">
+
+                <label class="form-check-label">
+                    Legal Guardian
+                </label>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</template>
+
+<!-- ==========================================================
+     EMERGENCY CONTACT TEMPLATE
+========================================================== -->
+<template id="emergencyContactTemplate">
+
+<div class="border rounded p-3 mb-3 emergency-card">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h6 class="mb-0">
+            Emergency Contact
+        </h6>
+
+        <button type="button"
+                class="btn btn-sm btn-danger remove-emergency-contact">
+
+            Remove
+
+        </button>
+
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-md-3">
+
+            <label class="form-label">
+                First Name
+            </label>
+
+            <input class="form-control emergency-first-name">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <label class="form-label">
+                Last Name
+            </label>
+
+            <input class="form-control emergency-last-name">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <label class="form-label">
+                Relationship
+            </label>
+
+            <input class="form-control emergency-relationship">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <label class="form-label">
+                Phone
+            </label>
+
+            <input class="form-control emergency-phone">
+
+        </div>
+
+        <div class="form-check me-3">
+
+                <input type="checkbox"
+                       class="form-check-input authorizedpickup">
+
+                <label class="form-check-label">
+                    Authorized Pickup
+                </label>
+
+        </div>
+    </div>
+
+</div>
+
+</template>
+
 {% endblock %}
 
 {% block scripts %}
