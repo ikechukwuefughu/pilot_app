@@ -1,4 +1,3 @@
-# app/models/household.py
 from app import db
 from sqlalchemy import func
 
