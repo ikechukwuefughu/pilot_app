@@ -148,11 +148,6 @@ def save_children():
             "success": False,
             "error": str(e),
             "trace": traceback.format_exc()
-        }), 500k.format_exc())
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "trace": traceback.format_exc()
         }), 500
 
     finally:
