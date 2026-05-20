@@ -35,3 +35,16 @@ class Parent(db.Model):
     )
 
     household = db.relationship("Household", back_populates="parents")
+
+    def to_dict(self):
+        return {
+            "parent_id": self.parent_id,
+            "household_id": self.household_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "phone": self.phone,
+            "email": self.email,
+            "is_primary": self.is_primary,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+        }
