@@ -1,3 +1,6 @@
+from app import db
+from sqlalchemy import func
+
 class ChildEmergencyContact(db.Model):
     __tablename__ = "child_emergency_contact"
     __table_args__ = {"schema": "dbo"}
