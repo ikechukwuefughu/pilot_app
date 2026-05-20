@@ -25,7 +25,7 @@
 #     return conn
 
 # import pyodbc
-# import os
+import os
 
 # def get_db_connection():
 #     conn = pyodbc.connect(os.getenv("DATABASE_URL"))
