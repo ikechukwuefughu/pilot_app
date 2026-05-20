@@ -147,9 +147,6 @@ def save_children():
             "trace": traceback.format_exc()
         }), 500
 
-    finally:
-        conn.close()
-
 # @children_bp.route("/api/household/<int:household_id>", methods=["GET"])
 # def get_household(household_id):
 
