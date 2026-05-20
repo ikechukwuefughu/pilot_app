@@ -3,11 +3,11 @@
 # from app import db
 # from datetime import date
 
-# children_bp = Blueprint(
-#     "children",
-#     __name__,
-#     url_prefix="/children"
-# )
+children_bp = Blueprint(
+    "children",
+    __name__,
+    url_prefix="/children"
+)
 
 # ==========================================================
 # PAGE
