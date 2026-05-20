@@ -1,3 +1,6 @@
+from app import db
+from sqlalchemy import func
+
 class ChildContract(db.Model):
     __tablename__ = "child_contracts"
     __table_args__ = {"schema": "dbo"}
