@@ -150,6 +150,47 @@ def save_children():
     finally:
         conn.close()
 
+# @children_bp.route("/api/household/<int:household_id>", methods=["GET"])
+# def get_household(household_id):
+
+#     household = db.session.get(Household, household_id)
+#     parents = Parent.query.filter_by(household_id=household_id).all()
+#     children = Child.query.filter_by(household_id=household_id).all()
+
+#     result_children = []
+
+#     for c in children:
+    
+#         contracts = ChildContract.query.filter_by(child_id=c.child_id).all()
+#         medical = ChildMedicalInfo.query.filter_by(child_id=c.child_id).first()
+#         emergency = ChildEmergencyContact.query.filter_by(child_id=c.child_id).all()
+#         relationships = ChildParentRelationship.query.filter_by(child_id=c.child_id).all()
+    
+#         base = c.to_dict() if hasattr(c, "to_dict") else {
+#             "child_id": c.child_id,
+#             "first_name": c.first_name,
+#             "last_name": c.last_name,
+#             "date_of_birth": c.date_of_birth,
+#             "ppsn": c.ppsn,
+#             "chick_code": c.chick_code,
+#             "ecce_eligible": c.ecce_eligible,
+#             "start_date": c.start_date
+#         }
+    
+#         result_children.append({
+#             **base,
+#             "contracts": [x.to_dict() for x in contracts] if contracts else [],
+#             "medical": medical.to_dict() if medical else {},
+#             "emergency_contacts": [x.to_dict() for x in emergency],
+#             "relationships": [x.to_dict() for x in relationships]
+#         })
+    
+#         return jsonify({
+#             "household": household.to_dict() if household else None,
+#             "parents": [p.to_dict() for p in parents],
+#             "children": result_children
+#         })
+
 @children_bp.route("/api/household/<int:household_id>", methods=["GET"])
 def get_household(household_id):
 
@@ -160,12 +201,12 @@ def get_household(household_id):
     result_children = []
 
     for c in children:
-    
+
         contracts = ChildContract.query.filter_by(child_id=c.child_id).all()
         medical = ChildMedicalInfo.query.filter_by(child_id=c.child_id).first()
         emergency = ChildEmergencyContact.query.filter_by(child_id=c.child_id).all()
         relationships = ChildParentRelationship.query.filter_by(child_id=c.child_id).all()
-    
+
         base = c.to_dict() if hasattr(c, "to_dict") else {
             "child_id": c.child_id,
             "first_name": c.first_name,
@@ -176,7 +217,7 @@ def get_household(household_id):
             "ecce_eligible": c.ecce_eligible,
             "start_date": c.start_date
         }
-    
+
         result_children.append({
             **base,
             "contracts": [x.to_dict() for x in contracts] if contracts else [],
@@ -184,9 +225,22 @@ def get_household(household_id):
             "emergency_contacts": [x.to_dict() for x in emergency],
             "relationships": [x.to_dict() for x in relationships]
         })
-    
-        return jsonify({
-            "household": household.to_dict() if household else None,
-            "parents": [p.to_dict() for p in parents],
-            "children": result_children
-        })
+
+    return jsonify({
+        "household": household.to_dict() if household else None,
+        "parents": [p.to_dict() for p in parents],
+        "children": result_children
+    })
+
+@children_bp.route("/api/households", methods=["GET"])
+def get_households():
+
+    households = Household.query.all()
+
+    return jsonify([
+        {
+            "household_id": h.household_id,
+            "household_name": h.household_name
+        }
+        for h in households
+    ])
