@@ -168,7 +168,6 @@ def get_household(household_id):
         emergency = ChildEmergencyContact.query.filter_by(child_id=c.child_id).all()
         relationships = ChildParentRelationship.query.filter_by(child_id=c.child_id).all()
 
-        result_children.append({
             base = c.to_dict() if hasattr(c, "to_dict") else {
                 "child_id": c.child_id,
                 "first_name": c.first_name,
