@@ -5,7 +5,7 @@ class ChildEmergencyContact(db.Model):
     __tablename__ = "child_emergency_contact"
     __table_args__ = {"schema": "dbo"}
 
-    contact_id = db.Column(db.Integer, primary_key=True)
+    emergency_contact_id = db.Column(db.Integer, primary_key=True)
 
     child_id = db.Column(
         db.Integer,
