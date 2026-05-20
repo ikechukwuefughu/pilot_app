@@ -1,237 +1,200 @@
-from flask import Blueprint, render_template, request, jsonify
-# # from app.config import get_db_connection
-# from app import db
-# from datetime import date
+from flask import Blueprint, render_template, request, jsonify, current_app
+from app import db
+from app.models import Child, ChildContract, ChildMedicalInfo, ChildEmergencyContact, ChildParentRelationship
+from datetime import date
 
-children_bp = Blueprint(
-    "children",
-    __name__,
-    url_prefix="/children"
-)
+children_bp = Blueprint("children",__name__,url_prefix="/children")
 
 # ==========================================================
-# PAGE
+# PAGE VIEW
 # ==========================================================
 @children_bp.route("/")
 def child_setup():
     return render_template("registration/children/child.html")
 
+# ==========================================================
+# SAVE CHILDREN (FULL UPSERT)
+# ==========================================================
+@children_bp.route("/api/child/setup", methods=["POST"])
+def save_children():
 
-# # ==========================================================
-# # SAVE (CREATE + UPDATE)
-# # ==========================================================
-# @children_bp.route("/api/child/setup", methods=["POST"])
-# def save_children():
+    data = request.get_json()
+    household_id = data.get("household_id")
+    children = data.get("children", [])
 
-#     data = request.get_json()
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
+    if not household_id:
+        return jsonify({"success": False, "error": "household_id required"}), 400
 
-#     try:
-#         household_id = data.get("household_id")
-#         children = data.get("children", [])
+    try:
+        for c in children:
 
-#         if not household_id:
-#             return jsonify({"success": False, "error": "household_id required"}), 400
+            child_id = c.get("child_id")
+            contract = c.get("contract", {})
+            medical = c.get("medical", {})
+            emergency_contacts = c.get("emergency_contacts", []) or []
+            relationships = c.get("relationships", []) or []
 
-#         submitted_child_ids = set()
+            # ==================================================
+            # STATUS
+            # ==================================================
+            status = "Active"
+            if contract.get("end_date"):
+                try:
+                    if date.fromisoformat(contract["end_date"]) < date.today():
+                        status = "Inactive"
+                except:
+                    pass
 
-#         for c in children:
+            # ==================================================
+            # CHILD UPSERT
+            # ==================================================
+            if child_id:
+                child_obj = Child.query.get(child_id)
+            else:
+                child_obj = Child()
+                db.session.add(child_obj)
 
-#             child_id = c.get("child_id")
-#             contract = c.get("contract", {})
+            child_obj.household_id = household_id
+            child_obj.first_name = c.get("first_name")
+            child_obj.last_name = c.get("last_name")
+            child_obj.date_of_birth = c.get("date_of_birth")
+            child_obj.ppsn = c.get("ppsn")
+            child_obj.chick_code = c.get("chick_code")
+            child_obj.ecce_eligible = bool(c.get("ecce_eligible"))
+            child_obj.start_date = c.get("start_date")
 
-#             # ================= STATUS =================
-#             status = "Active"
-#             if contract.get("end_date"):
-#                 try:
-#                     if date.fromisoformat(contract["end_date"]) < date.today():
-#                         status = "Inactive"
-#                 except:
-#                     pass
+            db.session.flush()  # ensures child_id exists
+            child_id = child_obj.child_id
 
-#             # ================= CHILD UPSERT =================
-#             if child_id:
+            # ==================================================
+            # CONTRACT UPSERT
+            # ==================================================
+            contract_id = contract.get("contract_id")
 
-#                 submitted_child_ids.add(int(child_id))
+            if contract_id:
+            contract_id = contract.get("contract_id")
 
-#                 cursor.execute("""
-#                     UPDATE child
-#                     SET household_id = ?,
-#                         first_name = ?,
-#                         last_name = ?,
-#                         date_of_birth = ?,
-#                         ppsn = ?,
-#                         chick_code = ?,
-#                         ecce_eligible = ?,
-#                         start_date = ?
-#                     WHERE child_id = ?
-#                 """, (
-#                     household_id,
-#                     c.get("first_name"),
-#                     c.get("last_name"),
-#                     c.get("date_of_birth"),
-#                     c.get("ppsn"),
-#                     c.get("chick_code"),
-#                     1 if c.get("ecce_eligible") else 0,
-#                     c.get("start_date"),
-#                     child_id
-#                 ))
+            if contract_id:
+                contract_obj = ChildContract.query.get(contract_id)
+            else:
+                contract_obj = ChildContract(child_id=child_id)
+                db.session.add(contract_obj)
 
-#             else:
+            contract_obj.contract_type = contract.get("type")
+            contract_obj.start_date = contract.get("start_date")
+            contract_obj.end_date = contract.get("end_date")
+            contract_obj.agreed_hours_per_week = contract.get("hours_per_week")
+            contract_obj.hourly_rate = contract.get("hourly_rate")
+            contract_obj.subsidy_rate = contract.get("subsidy_rate")
+            contract_obj.status = status
 
-#                 cursor.execute("""
-#                     INSERT INTO child (
-#                         household_id,
-#                         first_name,
-#                         last_name,
-#                         date_of_birth,
-#                         ppsn,
-#                         chick_code,
-#                         ecce_eligible,
-#                         start_date
-#                     )
-#                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-#                 """, (
-#                     household_id,
-#                     c.get("first_name"),
-#                     c.get("last_name"),
-#                     c.get("date_of_birth"),
-#                     c.get("ppsn"),
-#                     c.get("chick_code"),
-#                     1 if c.get("ecce_eligible") else 0,
-#                     c.get("start_date")
-#                 ))
+            # ==================================================
+            # MEDICAL INFO (UPSERT 1:1)
+            # ==================================================
 
-#                 child_id = cursor.lastrowid
-#                 submitted_child_ids.add(child_id)
+            medical_obj = ChildMedicalInfo.query.filter_by(child_id=child_id).first()
 
-#             # ================= CONTRACT UPSERT =================
-#             contract_id = contract.get("contract_id")
+            if not medical_obj:
+                medical_obj = ChildMedicalInfo(child_id=child_id)
+                db.session.add(medical_obj)
 
-#             if contract_id:
+            medical_obj.allergies = medical.get("allergies")
+            medical_obj.medical_notes = medical.get("medical_notes")
 
-#                 cursor.execute("""
-#                     UPDATE child_contracts
-#                     SET contract_type = ?,
-#                         start_date = ?,
-#                         end_date = ?,
-#                         agreed_hours_per_week = ?,
-#                         hourly_rate = ?,
-#                         subsidy_rate = ?,
-#                         status = ?
-#                     WHERE contract_id = ?
-#                 """, (
-#                     contract.get("type"),
-#                     contract.get("start_date"),
-#                     contract.get("end_date"),
-#                     contract.get("hours_per_week"),
-#                     contract.get("hourly_rate"),
-#                     contract.get("subsidy_rate"),
-#                     status,
-#                     contract_id
-#                 ))
+            # ==================================================
+            # EMERGENCY CONTACTS (REPLACE + LIMIT 4)
+            # ==================================================
+            if len(emergency_contacts) > 4:
+                return jsonify({
+                    "success": False,
+                    "error": "Maximum 4 emergency contacts allowed per child"
+                }), 400
 
-#             else:
+            ChildEmergencyContact.query.filter_by(child_id=child_id).delete()
 
-#                 cursor.execute("""
-#                     INSERT INTO child_contracts (
-#                         child_id,
-#                         contract_type,
-#                         start_date,
-#                         end_date,
-#                         agreed_hours_per_week,
-#                         hourly_rate,
-#                         subsidy_rate,
-#                         status
-#                     )
-#                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-#                 """, (
-#                     child_id,
-#                     contract.get("type"),
-#                     contract.get("start_date"),
-#                     contract.get("end_date"),
-#                     contract.get("hours_per_week"),
-#                     contract.get("hourly_rate"),
-#                     contract.get("subsidy_rate"),
-#                     status
-#                 ))
+            for ec in emergency_contacts:
+                db.session.add(ChildEmergencyContact(
+                    child_id=child_id,
+                    first_name=ec.get("first_name"),
+                    last_name=ec.get("last_name"),
+                    relationship_to_child=ec.get("relationship"),
+                    phone=ec.get("phone"),
+                    authorized_pickup=bool(ec.get("authorized_pickup"))
+                ))
 
-#         conn.commit()
+            # ==================================================
+            # PARENT RELATIONSHIPS (REPLACE)
+            # ==================================================
+            ChildParentRelationship.query.filter_by(child_id=child_id).delete()
 
-#         return jsonify({"success": True, "message": "Saved successfully"})
+            for rel in relationships:
+                db.session.add(ChildParentRelationship(
+                    child_id=child_id,
+                    parent_id=rel.get("parent_id"),
+                    relationship_type=rel.get("relationship"),
+                    legal_guardian=bool(rel.get("is_legal_guardian")),
+                    authorized_pickup=False,
+                    emergency_contact=False
+                ))
 
-#     except Exception as e:
-#         conn.rollback()
-#         return jsonify({"success": False, "error": str(e)}), 500
+        db.session.commit()
 
-#     finally:
-#         conn.close()
+        return jsonify({"success": True, "message": "Saved successfully"})
 
+    except Exception as e:
+        db.session.rollback()
+        import traceback
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "trace": traceback.format_exc()
+        }), 500k.format_exc())   # 🔥 ADD THIS
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "trace": traceback.format_exc()
+        }), 500
 
-# # ==========================================================
-# # HOUSEHOLDS
-# # ==========================================================
-# @children_bp.route("/api/households", methods=["GET"])
-# def get_households():
+    finally:
+        conn.close()
 
-#     conn = get_db_connection()
+@children_bp.route("/api/household/<int:household_id>", methods=["GET"])
+def get_household(household_id):
 
-#     rows = conn.execute("""
-#         SELECT household_id, household_name
-#         FROM household
-#         ORDER BY household_name
-#     """).fetchall()
+    household = db.session.get(Household, household_id)
 
-#     conn.close()
+    parents = Parent.query.filter_by(household_id=household_id).all()
 
-#     return jsonify([dict(r) for r in rows])
+    children = Child.query.filter_by(household_id=household_id).all()
 
+    result_children = []
 
-# # ==========================================================
-# # EDIT MODE DATA LOADER (KEY PIECE)
-# # ==========================================================
-# @children_bp.route("/api/household/<int:household_id>", methods=["GET"])
-# def get_household(household_id):
+    for c in children:
 
-#     conn = get_db_connection()
+        contracts = ChildContract.query.filter_by(child_id=c.child_id).all()
+        medical = ChildMedicalInfo.query.filter_by(child_id=c.child_id).first()
+        emergency = ChildEmergencyContact.query.filter_by(child_id=c.child_id).all()
+        relationships = ChildParentRelationship.query.filter_by(child_id=c.child_id).all()
 
-#     household = conn.execute("""
-#         SELECT * FROM household WHERE household_id = ?
-#     """, (household_id,)).fetchone()
+        result_children.append({
+            **c.to_dict() if hasattr(c, "to_dict") else {
+                "child_id": c.child_id,
+                "first_name": c.first_name,
+                "last_name": c.last_name,
+                "date_of_birth": c.date_of_birth,
+                "ppsn": c.ppsn,
+                "chick_code": c.chick_code,
+                "ecce_eligible": c.ecce_eligible,
+                "start_date": c.start_date
+            },
+            "contracts": [x.to_dict() for x in contracts] if contracts else [],
+            "medical": medical.to_dict() if medical else {},
+            "emergency_contacts": [x.to_dict() for x in emergency],
+            "relationships": [x.to_dict() for x in relationships]
+        })
 
-#     parents = conn.execute("""
-#         SELECT * FROM parent WHERE household_id = ?
-#     """, (household_id,)).fetchall()
-
-#     rows = conn.execute("""
-#         SELECT 
-#             c.child_id,
-#             c.first_name,
-#             c.last_name,
-#             c.date_of_birth,
-#             c.ppsn,
-#             c.chick_code,
-#             c.ecce_eligible,
-#             c.start_date,
-
-#             cc.contract_id,
-#             cc.contract_type,
-#             cc.start_date AS contract_start_date,
-#             cc.end_date,
-#             cc.agreed_hours_per_week,
-#             cc.hourly_rate,
-#             cc.subsidy_rate
-
-#         FROM child c
-#         LEFT JOIN child_contracts cc ON cc.child_id = c.child_id
-#         WHERE c.household_id = ?
-#     """, (household_id,)).fetchall()
-
-#     conn.close()
-
-#     return jsonify({
-#         "household": dict(household),
-#         "parents": [dict(p) for p in parents],
-#         "children": [dict(r) for r in rows]
-#     })
+    return jsonify({
+        "household": household.to_dict() if household else None,
+        "parents": [p.to_dict() for p in parents],
+        "children": result_children
+    })
