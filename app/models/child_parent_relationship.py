@@ -1,3 +1,6 @@
+from app import db
+from sqlalchemy import func
+
 class ChildParentRelationship(db.Model):
     __tablename__ = "child_parent_relationship"
     __table_args__ = {"schema": "dbo"}
