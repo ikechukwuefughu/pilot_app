@@ -40,3 +40,17 @@ class Household(db.Model):
         back_populates="household",
         lazy="selectin"
     )
+
+    def to_dict(self):
+        return {
+            "household_id": self.household_id,
+            "household_name": self.household_name,
+            "address_line1": self.address_line1,
+            "address_line2": self.address_line2,
+            "city": self.city,
+            "county": self.county,
+            "eircode": self.eircode,
+            "phone": self.phone,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None
+        }
