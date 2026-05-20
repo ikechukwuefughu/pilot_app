@@ -35,7 +35,7 @@ class Child(db.Model):
     start_date = db.Column(db.Date)
 
     chick_code = db.Column(db.Unicode(100), unique=True)
-
+    
     # relationships
     household = db.relationship("Household", back_populates="children")
-    attendance = db.relationship("ChildAttendance", back_populates="child", cascade="all, delete")
+    # attendance = db.relationship("ChildAttendance", back_populates="child", cascade="all, delete")
