@@ -32,21 +32,21 @@
 
 #     return jsonify([r["name"] for r in rows])
 
-# # ==========================================================
-# # Attendance Page
-# # ==========================================================
-# @attendance_bp.route("/attendance")
-# def attendance():
-#     """
-#     Render the main attendance page.
+# ==========================================================
+# Attendance Page
+# ==========================================================
+@attendance_bp.route("/attendance")
+def attendance():
+    """
+    Render the main attendance page.
 
-#     Route:
-#         GET /attendance
+    Route:
+        GET /attendance
 
-#     Returns:
-#         attendance.html template
-#     """
-#     return render_template("management/attendance.html")
+    Returns:
+        attendance.html template
+    """
+    return render_template("management/attendance.html")
 
 
 # # ==========================================================
