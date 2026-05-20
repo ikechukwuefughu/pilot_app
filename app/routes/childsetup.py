@@ -169,7 +169,7 @@ def get_household(household_id):
         relationships = ChildParentRelationship.query.filter_by(child_id=c.child_id).all()
 
         result_children.append({
-            **c.to_dict() if hasattr(c, "to_dict") else {
+            base = c.to_dict() if hasattr(c, "to_dict") else {
                 "child_id": c.child_id,
                 "first_name": c.first_name,
                 "last_name": c.last_name,
@@ -178,12 +178,15 @@ def get_household(household_id):
                 "chick_code": c.chick_code,
                 "ecce_eligible": c.ecce_eligible,
                 "start_date": c.start_date
-            },
-            "contracts": [x.to_dict() for x in contracts] if contracts else [],
-            "medical": medical.to_dict() if medical else {},
-            "emergency_contacts": [x.to_dict() for x in emergency],
-            "relationships": [x.to_dict() for x in relationships]
-        })
+            }
+            
+            result_children.append({
+                **base,
+                "contracts": [x.to_dict() for x in contracts] if contracts else [],
+                "medical": medical.to_dict() if medical else {},
+                "emergency_contacts": [x.to_dict() for x in emergency],
+                "relationships": [x.to_dict() for x in relationships]
+            })
 
     return jsonify({
         "household": household.to_dict() if household else None,
