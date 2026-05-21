@@ -457,11 +457,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     ...row,
 
-                    medical: {
-                        allergies: row.allergies || "",
-                        medical_notes: row.medical_notes || ""
-                    },
+                    // medical: {
+                    //     allergies: row.allergies || "",
+                    //     medical_notes: row.medical_notes || ""
+                    // },
 
+                    medical: row.medical || {},
+                        
                     contract: null
                 };
             }
