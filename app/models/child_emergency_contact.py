@@ -29,5 +29,5 @@ class ChildEmergencyContact(db.Model):
             "relationship_to_child": self.relationship_to_child,
             "phone": self.phone,
             "authorized_pickup": self.authorized_pickup,
-            "priority_order": self.priority_order
+            # "priority_order": self.priority_order
         }
