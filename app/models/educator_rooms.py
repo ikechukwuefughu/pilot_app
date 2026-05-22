@@ -41,6 +41,8 @@ class EducatorRoom(db.Model):
         server_default=func.sysutcdatetime(),
     )
 
-    educator = db.relationship("Educator", lazy="selectin")
-
-    room = db.relationship("Room", lazy="selectin")
+    educator = db.relationship(
+        "Educator",
+        back_populates="educator_rooms",
+        lazy="selectin",
+    )
