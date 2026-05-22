@@ -17,11 +17,10 @@ from .educator_rooms import EducatorRoom
 from .educator_working_hours import EducatorWorkingHour
 from .educator_attendance import EducatorAttendance
 
-from .attendance_sessions import AttendanceSession
-
 from .child_rooms import ChildRoom
-from .child_attendance import ChildAttendance
 from .child_attendance_history import ChildAttendanceHistory
+from .child_attendance import ChildAttendance
+from .attendance_sessions import AttendanceSession
 
 __all__ = [
     "Household",
