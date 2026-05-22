@@ -101,4 +101,21 @@ class ChildAttendance(db.Model):
         "Parent",
         lazy="selectin",
     )
+
+    def to_dict(self):
+        return {
+            "attendance_id": self.attendance_id,
+            "child_id": self.child_id,
+            "room_id": self.room_id,
+            "educator_id": self.educator_id,
+            "session_id": self.session_id,
+            "attendance_date": self.attendance_date.isoformat() if self.attendance_date else None,
+            "status": self.status,
+            "check_in_time": self.check_in_time.isoformat() if self.check_in_time else None,
+            "check_out_time": self.check_out_time.isoformat() if self.check_out_time else None,
+            "pickup_by_parent_id": self.pickup_by_parent_id,
+            "notes": self.notes,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
     )
