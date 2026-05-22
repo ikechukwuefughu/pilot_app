@@ -42,11 +42,6 @@ class Household(db.Model):
         cascade="all, delete-orphan",
         lazy="selectin"
     )
-    # children = db.relationship(
-    #     "Child",
-    #     back_populates="household",
-    #     lazy="selectin"
-    # )
 
     def to_dict(self):
         return {
