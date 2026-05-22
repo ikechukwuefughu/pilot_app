@@ -2,18 +2,7 @@
 
 from flask import Blueprint, render_template, request, jsonify
 from app import db
-from app.models import (
-    Branch,
-    Room,
-    Educator,
-    EducatorRoom,
-    EducatorAttendance,
-    Child,
-    ChildRoom,
-    Household,
-    Parent,
-    ChildContract,
-)
+from app.models import Household, Parent, Child, ChildContract, ChildMedicalInfo, ChildEmergencyContact, ChildParentRelationship, Branch, Room, Educator, EducatorRoom, EducatorWorkingHour, EducatorAttendance, AttendanceSession, ChildRoom, ChildAttendance, ChildAttendanceHistory
 
 management_bp = Blueprint(
     "management",
