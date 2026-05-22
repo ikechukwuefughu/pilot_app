@@ -38,7 +38,7 @@ class Child(db.Model):
     
     # relationships
     household = db.relationship("Household", back_populates="children")
-    # attendance = db.relationship("ChildAttendance", back_populates="child", cascade="all, delete")
+    attendance = db.relationship("ChildAttendance", back_populates="child", cascade="all, delete")
 
     def to_dict(self):
         return {
