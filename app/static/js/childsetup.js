@@ -468,16 +468,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // LOAD HOUSEHOLD
     // ======================================================
     async function loadHousehold(id) {
-
-        const res =
-            await fetch(`${API}/household/${id}`);
-
-        const data =
-            await res.json();
-
-        householdParents =
-            data.parents || [];
-
+        const res = await fetch(`${API}/household/${id}`);
+        const data = await res.json();
+    
+        householdParents = data.parents || [];
+    
         parentPreviewContainer.innerHTML =
             householdParents.length
                 ? householdParents.map(p => `
@@ -486,52 +481,85 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 `).join("")
                 : "No parents";
-
-        const grouped = {};
-
-        data.children.forEach(row => {
-
-            if (!grouped[row.child_id]) {
-
-                grouped[row.child_id] = {
-
-                    ...row,
-
-                    // medical: {
-                    //     allergies: row.allergies || "",
-                    //     medical_notes: row.medical_notes || ""
-                    // },
-                    child_id: row.child_id,
-                    first_name: row.first_name,
-                    last_name: row.last_name,
-                    date_of_birth: row.date_of_birth,
-                    ppsn: row.ppsn,
-                    chick_code: row.chick_code,
-                    ecce_eligible: row.ecce_eligible,
-                    start_date: row.start_date,
-                    medical: row.medical || {},
-                        
-                    contract: null
-                };
-            }
-
-            if (row.contract_id) {
-
-                grouped[row.child_id].contract = {
-
-                    contract_id: row.contract_id,
-                    type: row.contract_type,
-                    start_date: row.contract_start_date,
-                    end_date: row.end_date,
-                    hours_per_week: row.agreed_hours_per_week,
-                    hourly_rate: row.hourly_rate,
-                    subsidy_rate: row.subsidy_rate
-                };
-            }
-        });
-
-        return Object.values(grouped);
+    
+        // Here: use the nested objects as-is
+        const children = (data.children || []).map(child => ({
+            ...child,
+            // assume at most one active contract; pick the first
+            contract: (child.contracts && child.contracts[0]) || null,
+            medical: child.medical || {},
+            emergency_contacts: child.emergency_contacts || [],
+            relationships: child.relationships || [],
+        }));
+    
+        return children;
     }
+
+    // async function loadHousehold(id) {
+
+    //     const res =
+    //         await fetch(`${API}/household/${id}`);
+
+    //     const data =
+    //         await res.json();
+
+    //     householdParents =
+    //         data.parents || [];
+
+    //     parentPreviewContainer.innerHTML =
+    //         householdParents.length
+    //             ? householdParents.map(p => `
+    //                 <div>
+    //                     <b>${p.first_name} ${p.last_name}</b>
+    //                 </div>
+    //             `).join("")
+    //             : "No parents";
+
+    //     const grouped = {};
+
+    //     data.children.forEach(row => {
+
+    //         if (!grouped[row.child_id]) {
+
+    //             grouped[row.child_id] = {
+
+    //                 ...row,
+
+    //                 // medical: {
+    //                 //     allergies: row.allergies || "",
+    //                 //     medical_notes: row.medical_notes || ""
+    //                 // },
+    //                 child_id: row.child_id,
+    //                 first_name: row.first_name,
+    //                 last_name: row.last_name,
+    //                 date_of_birth: row.date_of_birth,
+    //                 ppsn: row.ppsn,
+    //                 chick_code: row.chick_code,
+    //                 ecce_eligible: row.ecce_eligible,
+    //                 start_date: row.start_date,
+    //                 medical: row.medical || {},
+                        
+    //                 contract: null
+    //             };
+    //         }
+
+    //         if (row.contract_id) {
+
+    //             grouped[row.child_id].contract = {
+
+    //                 contract_id: row.contract_id,
+    //                 type: row.contract_type,
+    //                 start_date: row.contract_start_date,
+    //                 end_date: row.end_date,
+    //                 hours_per_week: row.agreed_hours_per_week,
+    //                 hourly_rate: row.hourly_rate,
+    //                 subsidy_rate: row.subsidy_rate
+    //             };
+    //         }
+    //     });
+
+    //     return Object.values(grouped);
+    // }
 
     // ======================================================
     // HOUSEHOLD CHANGE
