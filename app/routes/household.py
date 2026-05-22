@@ -127,7 +127,9 @@ def get_households():
         for h in households
     ]
     return jsonify(result)
-
+except Exception as e:
+        current_app.logger.exception("Error fetching households")
+        return jsonify({"error": str(e)}), 500
 
 # -----------------------------------------------------------
 # GET SINGLE HOUSEHOLD (+ PARENTS)
