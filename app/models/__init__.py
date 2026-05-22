@@ -20,8 +20,10 @@ from .educator_attendance import EducatorAttendance
 from .attendance_sessions import AttendanceSession
 
 from .child_rooms import ChildRoom
-from .child_attendance import ChildAttendance
-from .child_attendance_history import ChildAttendanceHistory
+from app.models.child_attendance import ChildAttendance
+from app.models.child_attendance_history import ChildAttendanceHistory
+# from .child_attendance import ChildAttendance
+# from .child_attendance_history import ChildAttendanceHistory
 
 __all__ = [
     "Household",
