@@ -44,3 +44,13 @@ class Room(db.Model):
         back_populates="room",
         lazy="selectin",
     )
+
+    def to_dict(self):
+        return {
+            "room_id": self.room_id,
+            "branch_id": self.branch_id,
+            "room_name": self.room_name,
+            "room_type": self.room_type,
+            "room_capacity": self.room_capacity,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
