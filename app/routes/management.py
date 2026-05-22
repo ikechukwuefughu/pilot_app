@@ -175,8 +175,8 @@ def educators():
                 educator_name=data.get("name"),
                 phone=data.get("phone"),
                 email=data.get("email"),
-                role=data.get("role"),
-                status="enabled",
+                role=data.get("role") or "Lead Educator",
+                status=data.get("status") or "enabled",
                 start_date=data.get("start_date"),
                 end_date=data.get("end_date"),
             )
