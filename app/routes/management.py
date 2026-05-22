@@ -1,6 +1,19 @@
+# app/routes/management.py
+
 from flask import Blueprint, render_template, request, jsonify
-# # from app.config import get_db_connection
-# from app import db
+from app import db
+from app.models import (
+    Branch,
+    Room,
+    Educator,
+    EducatorRoom,
+    EducatorAttendance,
+    Child,
+    ChildRoom,
+    Household,
+    Parent,
+    ChildContract,
+)
 
 management_bp = Blueprint(
     "management",
@@ -11,647 +24,472 @@ management_bp = Blueprint(
 # ==========================================================
 # PAGE
 # ==========================================================
-
 @management_bp.route("/")
 def management():
-    return render_template(
-        "management/management.html"
+    return render_template("management/management.html")
+
+
+# ==========================================================
+# BRANCHES (SQLAlchemy)
+# ==========================================================
+@management_bp.route("/api/branches", methods=["GET", "POST"])
+def branches():
+    try:
+        # ----------------------------------------------
+        # GET BRANCHES
+        # ----------------------------------------------
+        if request.method == "GET":
+            rows = (
+                db.session.query(Branch)
+                .order_by(Branch.branch_name)
+                .all()
+            )
+
+            return jsonify([
+                {
+                    "id": b.branch_id,
+                    "name": b.branch_name,
+                }
+                for b in rows
+            ])
+
+        # ----------------------------------------------
+        # CREATE BRANCH
+        # ----------------------------------------------
+        data = request.get_json() or {}
+        name = data.get("name")
+
+        if not name:
+            return jsonify({
+                "success": False,
+                "message": "Branch name is required",
+            }), 400
+
+        branch = Branch(branch_name=name)
+        db.session.add(branch)
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Branch created successfully",
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": str(e),
+        }), 500
+
+
+# ==========================================================
+# ROOMS (SQLAlchemy)
+# ==========================================================
+@management_bp.route("/api/rooms", methods=["GET", "POST"])
+def rooms():
+    try:
+        # ----------------------------------------------
+        # GET ROOMS
+        # ----------------------------------------------
+        if request.method == "GET":
+            rows = (
+                db.session.query(Room, Branch)
+                .outerjoin(Branch, Room.branch_id == Branch.branch_id)
+                .order_by(Branch.branch_name, Room.room_name)
+                .all()
+            )
+
+            result = []
+            for room, branch in rows:
+                result.append({
+                    "id": room.room_id,
+                    "name": room.room_name,
+                    "capacity": room.room_capacity,
+                    "type": room.room_type,
+                    "branch_id": room.branch_id,
+                    "branch_name": branch.branch_name if branch else None,
+                })
+
+            return jsonify(result)
+
+        # ----------------------------------------------
+        # CREATE ROOM
+        # ----------------------------------------------
+        data = request.get_json() or {}
+
+        room = Room(
+            branch_id=data.get("branch_id"),
+            room_name=data.get("name"),
+            room_capacity=data.get("capacity"),
+            room_type=data.get("type", "General"),
+        )
+
+        db.session.add(room)
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Room created successfully",
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": str(e),
+        }), 500
+
+
+# ==========================================================
+# EDUCATORS (SQLAlchemy)
+# ==========================================================
+@management_bp.route("/api/educators", methods=["GET", "POST", "PUT"])
+def educators():
+    try:
+        # ----------------------------------------------
+        # GET EDUCATORS
+        # ----------------------------------------------
+        if request.method == "GET":
+            rows = (
+                db.session.query(Educator)
+                .order_by(Educator.educator_name)
+                .all()
+            )
+
+            result = []
+            for e in rows:
+                # load related rooms
+                er_rows = (
+                    db.session.query(EducatorRoom, Room)
+                    .join(Room, EducatorRoom.room_id == Room.room_id)
+                    .filter(EducatorRoom.educator_id == e.educator_id)
+                    .all()
+                )
+
+                room_ids = [er.room_id for er, _ in er_rows]
+                room_names = ", ".join(r.room_name for _, r in er_rows)
+
+                result.append({
+                    "id": e.educator_id,
+                    "name": e.educator_name,
+                    "phone": e.phone,
+                    "email": e.email,
+                    "role": e.role,
+                    "status": e.status,
+                    "start_date": e.start_date,
+                    "end_date": e.end_date,
+                    "room_ids": room_ids,
+                    "rooms": room_names,
+                })
+
+            return jsonify(result)
+
+        # ----------------------------------------------
+        # CREATE EDUCATOR
+        # ----------------------------------------------
+        if request.method == "POST":
+            data = request.get_json() or {}
+
+            educator = Educator(
+                educator_name=data.get("name"),
+                phone=data.get("phone"),
+                email=data.get("email"),
+                role=data.get("role"),
+                status="Enabled",
+                start_date=data.get("start_date"),
+                end_date=data.get("end_date"),
+            )
+
+            db.session.add(educator)
+            db.session.commit()
+
+            return jsonify({
+                "success": True,
+                "message": "Educator created successfully",
+            })
+
+        # ----------------------------------------------
+        # UPDATE EDUCATOR
+        # ----------------------------------------------
+        if request.method == "PUT":
+            data = request.get_json() or {}
+            educator_id = data.get("id")
+
+            educator = db.session.get(Educator, educator_id)
+            if not educator:
+                return jsonify({
+                    "success": False,
+                    "message": "Educator not found",
+                }), 404
+
+            educator.educator_name = data.get("name")
+            educator.phone = data.get("phone")
+            educator.email = data.get("email")
+            educator.role = data.get("role")
+            educator.start_date = data.get("start_date")
+            educator.end_date = data.get("end_date")
+
+            db.session.commit()
+
+            return jsonify({
+                "success": True,
+                "message": "Educator updated successfully",
+            })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": str(e),
+        }), 500
+
+
+# ==========================================================
+# EDUCATOR ROOM ASSIGNMENT (SQLAlchemy)
+# ==========================================================
+@management_bp.route("/api/assign", methods=["POST"])
+def assign_rooms():
+    try:
+        data = request.get_json() or {}
+
+        educator_id = data.get("educator_id")
+        new_room_ids = set(data.get("room_ids", []))
+
+        if not educator_id:
+            return jsonify({
+                "success": False,
+                "message": "Missing educator_id",
+            }), 400
+
+        # current active room assignments
+        rows = (
+            db.session.query(EducatorRoom)
+            .filter(
+                EducatorRoom.educator_id == educator_id,
+                EducatorRoom.is_active == True,
+            )
+            .all()
+        )
+
+        current_room_ids = {r.room_id for r in rows}
+
+        to_add = new_room_ids - current_room_ids
+        to_remove = current_room_ids - new_room_ids
+
+        # deactivate removed rooms
+        if to_remove:
+            (
+                db.session.query(EducatorRoom)
+                .filter(
+                    EducatorRoom.educator_id == educator_id,
+                    EducatorRoom.room_id.in_(to_remove),
+                    EducatorRoom.is_active == True,
+                )
+                .update(
+                    {
+                        EducatorRoom.is_active: False,
+                        # if you have unassigned_at column:
+                        # EducatorRoom.unassigned_at: func.now(),
+                    },
+                    synchronize_session=False,
+                )
+            )
+
+        # add new active rooms
+        for room_id in to_add:
+            er = EducatorRoom(
+                educator_id=educator_id,
+                room_id=room_id,
+                is_active=True,
+                # assigned_at can have default=func.now() in the model
+            )
+            db.session.add(er)
+
+        db.session.commit()
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": str(e),
+        }), 500
+
+
+# ==========================================================
+# EDUCATOR ATTENDANCE (SQLAlchemy)
+# ==========================================================
+@management_bp.route("/api/attendance", methods=["POST"])
+def educator_attendance():
+    try:
+        data = request.get_json() or {}
+
+        attendance = EducatorAttendance(
+            educator_id=data.get("educator_id"),
+            attendance_date=data.get("date"),
+            clock_in=data.get("clock_in"),
+            clock_out=data.get("clock_out"),
+        )
+
+        db.session.add(attendance)
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "message": "Attendance saved successfully",
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": str(e),
+        }), 500
+
+
+# ==========================================================
+# CHILDREN MANAGEMENT (SQLAlchemy)
+# ==========================================================
+@management_bp.route("/api/children", methods=["GET"])
+def management_children():
+    """
+    Returns a list of children with:
+      - assigned_room
+      - contract_type / contract_status
+      - household name
+      - primary parent name + phone
+    """
+    # subquery to get latest active room per child
+    latest_room_subq = (
+        db.session.query(
+            ChildRoom.child_id,
+            ChildRoom.room_id,
+        )
+        .filter(ChildRoom.is_active == True)
+        # add ordering if you have a start_date column
+        # .order_by(ChildRoom.child_id, ChildRoom.start_date.desc())
+        .subquery()
     )
 
-# # ==========================================================
-# # BRANCHES
-# # ==========================================================
-
-# @management_bp.route("/api/branches", methods=["GET", "POST"])
-# def branches():
-
-#     conn = get_db_connection()
-
-#     try:
-
-#         # ======================================================
-#         # GET BRANCHES
-#         # ======================================================
-#         if request.method == "GET":
-
-#             rows = conn.execute("""
-#                 SELECT
-#                     branch_id,
-#                     branch_name
-#                 FROM branches
-#                 ORDER BY branch_name
-#             """).fetchall()
-
-#             branches = [
-#                 {
-#                     "id": row["branch_id"],
-#                     "name": row["branch_name"]
-#                 }
-#                 for row in rows
-#             ]
-
-#             return jsonify(branches)
-
-#         # ======================================================
-#         # CREATE BRANCH
-#         # ======================================================
-#         data = request.get_json()
-
-#         conn.execute("""
-#             INSERT INTO branches (
-#                 branch_name
-#             )
-#             VALUES (?)
-#         """, (
-#             data["name"],
-#         ))
-
-#         conn.commit()
-
-#         return jsonify({
-#             "success": True,
-#             "message": "Branch created successfully"
-#         })
-
-#     except Exception as e:
-
-#         conn.rollback()
-
-#         return jsonify({
-#             "success": False,
-#             "message": str(e)
-#         }), 500
-
-#     finally:
-#         conn.close()
-
-# # ==========================================================
-# # ROOMS
-# # ==========================================================
-
-# @management_bp.route("/api/rooms", methods=["GET", "POST"])
-# def rooms():
-
-#     conn = get_db_connection()
-
-#     try:
-
-#         # ======================================================
-#         # GET ROOMS
-#         # ======================================================
-#         if request.method == "GET":
-
-#             rows = conn.execute("""
-#                 SELECT
-#                     r.room_id,
-#                     r.room_name,
-#                     r.room_capacity,
-#                     r.room_type,
-#                     r.branch_id,
-#                     b.branch_name
-#                 FROM rooms r
-
-#                 LEFT JOIN branches b
-#                     ON r.branch_id = b.branch_id
-
-#                 ORDER BY
-#                     b.branch_name,
-#                     r.room_name
-#             """).fetchall()
-
-#             rooms = [
-#                 {
-#                     "id": row["room_id"],
-#                     "name": row["room_name"],
-#                     "capacity": row["room_capacity"],
-#                     "type": row["room_type"],
-#                     "branch_id": row["branch_id"],
-#                     "branch_name": row["branch_name"]
-#                 }
-#                 for row in rows
-#             ]
-
-#             return jsonify(rooms)
-
-#         # ======================================================
-#         # CREATE ROOM
-#         # ======================================================
-#         data = request.get_json()
-
-#         conn.execute("""
-#             INSERT INTO rooms (
-#                 branch_id,
-#                 room_name,
-#                 room_capacity,
-#                 room_type
-#             )
-#             VALUES (?, ?, ?, ?)
-#         """, (
-#             data["branch_id"],
-#             data["name"],
-#             data["capacity"],
-#             data.get("type", "General")
-#         ))
-
-#         conn.commit()
-
-#         return jsonify({
-#             "success": True,
-#             "message": "Room created successfully"
-#         })
-
-#     except Exception as e:
-
-#         conn.rollback()
-
-#         return jsonify({
-#             "success": False,
-#             "message": str(e)
-#         }), 500
-
-#     finally:
-#         conn.close()
-
-# # ==========================================================
-# # EDUCATORS
-# # ==========================================================
-
-# @management_bp.route("/api/educators", methods=["GET", "POST", "PUT"])
-# def educators():
-
-#     conn = get_db_connection()
-
-#     try:
-
-#         # ======================================================
-#         # GET EDUCATORS
-#         # ======================================================
-#         if request.method == "GET":
-
-#             rows = conn.execute("""
-#                 SELECT
-#                     educator_id,
-#                     educator_name,
-#                     phone,
-#                     email,
-#                     role,
-#                     status,
-#                     start_date,
-#                     end_date
-#                 FROM educators
-#                 ORDER BY educator_name
-#             """).fetchall()
-
-#             educators = []
-
-#             for row in rows:
-
-#                 room_rows = conn.execute("""
-#                     SELECT
-#                         er.room_id, r.room_name
-#                     FROM educator_rooms er
-
-#                     LEFT JOIN rooms r
-#                         ON er.room_id = r.room_id
-
-#                     WHERE er.educator_id = ?
-#                 """, (
-#                     row["educator_id"],
-#                 )).fetchall()
-
-#                 room_ids = [r["room_id"] 
-#                     for r in room_rows]
-#                 room_names = ", ".join([
-#                     room["room_name"]
-#                     for room in room_rows
-#                 ])
-
-#                 educators.append({
-#                     "id": row["educator_id"],
-#                     "name": row["educator_name"],
-#                     "phone": row["phone"],
-#                     "email": row["email"],
-#                     "role": row["role"],
-#                     "status": row["status"],
-#                     "start_date": row["start_date"],
-#                     "end_date": row["end_date"],
-#                     "room_ids": room_ids,
-#                     "rooms": room_names
-#                 })
-
-#             return jsonify(educators)
-
-#         # ======================================================
-#         # CREATE EDUCATOR
-#         # ======================================================
-#         if request.method == "POST":
-
-#             data = request.get_json()
-
-#             conn.execute("""
-#                 INSERT INTO educators (
-#                     educator_name,
-#                     phone,
-#                     email,
-#                     role,
-#                     status,
-#                     start_date,
-#                     end_date
-#                 )
-#                 VALUES (?, ?, ?, ?, ?, ?, ?)
-#             """, (
-#                 data["name"],
-#                 data["phone"],
-#                 data["email"],
-#                 data["role"],
-#                 "Enabled",
-#                 data["start_date"],
-#                 data["end_date"]
-#             ))
-
-#             conn.commit()
-
-#             return jsonify({
-#                 "success": True,
-#                 "message": "Educator created successfully"
-#             })
-
-#         # ======================================================
-#         # UPDATE EDUCATOR
-#         # ======================================================
-#         if request.method == "PUT":
-
-#             data = request.get_json()
-
-#             conn.execute("""
-#                 UPDATE educators
-
-#                 SET
-#                     educator_name = ?,
-#                     phone = ?,
-#                     email = ?,
-#                     role = ?,
-#                     start_date = ?,
-#                     end_date = ?
-
-#                 WHERE educator_id = ?
-#             """, (
-#                 data["name"],
-#                 data["phone"],
-#                 data["email"],
-#                 data["role"],
-#                 data["start_date"],
-#                 data["end_date"],
-#                 data["id"]
-#             ))
-
-#             conn.commit()
-
-#             return jsonify({
-#                 "success": True,
-#                 "message": "Educator updated successfully"
-#             })
-
-#     except Exception as e:
-
-#         conn.rollback()
-
-#         return jsonify({
-#             "success": False,
-#             "message": str(e)
-#         }), 500
-
-#     finally:
-#         conn.close()
-
-# # ==========================================================
-# # EDUCATOR ROOM ASSIGNMENT
-# # ==========================================================
-
-# @management_bp.route("/api/assign", methods=["POST"])
-# def assign_rooms():
-
-#     conn = get_db_connection()
-
-#     try:
-
-#         data = request.get_json()
-
-#         educator_id = data.get("educator_id")
-#         new_room_ids = set(data.get("room_ids", []))
-
-#         print("EDUCATOR ASSIGNMENT:", data)
-
-#         if not educator_id:
-
-#             return jsonify({
-#                 "success": False,
-#                 "message": "Missing educator_id"
-#             }), 400
-
-#         # ==================================================
-#         # CURRENT ACTIVE ROOM ASSIGNMENTS
-#         # ==================================================
-
-#         rows = conn.execute("""
-
-#             SELECT
-#                 educator_room_id,
-#                 room_id
-
-#             FROM educator_rooms
-
-#             WHERE educator_id = ?
-#             AND is_active = 1
-
-#         """, (educator_id,)).fetchall()
-
-#         current_room_ids = {
-#             r["room_id"]
-#             for r in rows
-#         }
-
-#         # ==================================================
-#         # FIND CHANGES
-#         # ==================================================
-
-#         to_add = new_room_ids - current_room_ids
-
-#         to_remove = current_room_ids - new_room_ids
-
-#         # ==================================================
-#         # DEACTIVATE REMOVED ROOMS
-#         # ==================================================
-
-#         for room_id in to_remove:
-
-#             conn.execute("""
-
-#                 UPDATE educator_rooms
-
-#                 SET
-#                     is_active = 0,
-#                     unassigned_at = CURRENT_TIMESTAMP
-
-#                 WHERE educator_id = ?
-#                 AND room_id = ?
-#                 AND is_active = 1
-
-#             """, (educator_id, room_id))
-
-#         # ==================================================
-#         # ADD NEW ACTIVE ROOMS
-#         # ==================================================
-
-#         for room_id in to_add:
-
-#             conn.execute("""
-
-#                 INSERT INTO educator_rooms (
-
-#                     educator_id,
-#                     room_id,
-#                     assigned_at,
-#                     is_active
-
-#                 )
-#                 VALUES (
-
-#                     ?,
-#                     ?,
-#                     CURRENT_TIMESTAMP,
-#                     1
-
-#                 )
-
-#             """, (
-
-#                 educator_id,
-#                 room_id
-
-#             ))
-
-#         conn.commit()
-
-#         return jsonify({
-#             "success": True
-#         })
-
-#     except Exception as e:
-
-#         conn.rollback()
-
-#         print("ASSIGNMENT ERROR:", str(e))
-
-#         return jsonify({
-#             "success": False,
-#             "message": str(e)
-#         }), 500
-
-#     finally:
-
-#         conn.close()
-
-# # ==========================================================
-# # ATTENDANCE
-# # ==========================================================
-
-# @management_bp.route("/api/attendance", methods=["POST"])
-# def attendance():
-
-#     conn = get_db_connection()
-
-#     try:
-
-#         data = request.get_json()
-
-#         conn.execute("""
-#             INSERT INTO educator_attendance (
-#                 educator_id,
-#                 attendance_date,
-#                 clock_in,
-#                 clock_out
-#             )
-#             VALUES (?, ?, ?, ?)
-#         """, (
-#             data["educator_id"],
-#             data["date"],
-#             data["clock_in"],
-#             data["clock_out"]
-#         ))
-
-#         conn.commit()
-
-#         return jsonify({
-#             "success": True,
-#             "message": "Attendance saved successfully"
-#         })
-
-#     except Exception as e:
-
-#         conn.rollback()
-
-#         return jsonify({
-#             "success": False,
-#             "message": str(e)
-#         }), 500
-
-#     finally:
-#         conn.close()
-
-# # ==========================================================
-# # CHILDREN MANAGEMENT
-# # ==========================================================
-
-# @management_bp.route("/api/children", methods=["GET"])
-# def children():
-
-#     conn = get_db_connection()
-
-#     rows = conn.execute("""
-#     SELECT
-#         c.child_id,
-#         c.first_name,
-#         c.last_name,
-#         c.date_of_birth,
-
-#         (
-#             SELECT r.room_name
-#             FROM child_rooms cr
-#             JOIN rooms r ON cr.room_id = r.room_id
-#             WHERE cr.child_id = c.child_id
-#             AND cr.is_active = 1
-#             ORDER BY cr.start_date DESC
-#             LIMIT 1
-#         ) AS assigned_room,
-
-#         ct.contract_type,
-#         ct.status AS contract_status,
-
-#         h.household_name AS household,
-
-#         p.first_name || ' ' || p.last_name AS parent,
-#         p.phone AS phone
-
-#     FROM child c
-
-#     LEFT JOIN child_contracts ct
-#         ON c.child_id = ct.child_id
-
-#     LEFT JOIN household h
-#         ON c.household_id = h.household_id
-
-#     LEFT JOIN parent p
-#         ON p.household_id = h.household_id
-#         AND p.is_primary = 1
-# """).fetchall()
-
-#     conn.close()
-
-#     return jsonify([
-#         {
-#             "child_id": r["child_id"],
-#             "first_name": r["first_name"],
-#             "last_name": r["last_name"],
-#             "assigned_room": r["assigned_room"],
-#             "contract_type": r["contract_type"],
-#             "contract_status": r["contract_status"],
-#             "date_of_birth": r["date_of_birth"],
-#             "household": r["household"],
-#             "parent": r["parent"],
-#             "phone": r["phone"]
-#         }
-#         for r in rows
-#     ])
-
-# @management_bp.route("/api/child-assign", methods=["POST"])
-# def assign_child_rooms():
-
-#     conn = get_db_connection()
-
-#     try:
-#         data = request.get_json()
-
-#         print("CHILD ASSIGN DATA:", data)
-
-#         child_id = data.get("child_id")
-#         new_room_ids = set(data.get("room_ids", []))
-
-#         if not child_id:
-#             return jsonify({
-#                 "success": False,
-#                 "message": "Missing child_id"
-#             }), 400
-
-#         # ======================================================
-#         # 1. CLOSE ALL CURRENT ACTIVE ROOMS (HISTORY SAFE)
-#         # ======================================================
-#         conn.execute("""
-#             UPDATE child_rooms
-#             SET is_active = 0,
-#                 end_date = CURRENT_TIMESTAMP
-#             WHERE child_id = ?
-#             AND is_active = 1
-#         """, (child_id,))
-
-#         # ======================================================
-#         # 2. INSERT NEW ROOM ASSIGNMENTS
-#         # ======================================================
-#         for room_id in new_room_ids:
-
-#             conn.execute("""
-#                 INSERT INTO child_rooms (
-#                     child_id,
-#                     room_id,
-#                     is_active
-#                 )
-#                 VALUES (?, ?, 1)
-#             """, (child_id, room_id))
-
-#         conn.commit()
-
-#         return jsonify({
-#             "success": True
-#         })
-
-#     except Exception as e:
-
-#         conn.rollback()
-
-#         print("CHILD ASSIGN ERROR:", str(e))
-
-#         return jsonify({
-#             "success": False,
-#             "message": str(e)
-#         }), 500
-
-#     finally:
-#         conn.close()
-
-# @management_bp.route("/api/child-assign/<int:child_id>", methods=["GET"])
-# def get_child_room(child_id):
-
-#     conn = get_db_connection()
-
-#     rows = conn.execute("""
-#         SELECT
-#             cr.room_id,
-#             r.room_name,
-#             r.branch_id
-#         FROM child_rooms cr
-#         JOIN rooms r ON cr.room_id = r.room_id
-#         WHERE cr.child_id = ?
-#         AND cr.is_active = 1
-#         ORDER BY cr.start_date DESC
-#     """, (child_id,)).fetchall()
-
-#     conn.close()
-
-#     return jsonify([
-#         {
-#             "room_id": r["room_id"],
-#             "room_name": r["room_name"],
-#             "branch_id": r["branch_id"]
-#         }
-#         for r in rows
-#     ])
+    q = (
+        db.session.query(
+            Child.child_id,
+            Child.first_name,
+            Child.last_name,
+            Child.date_of_birth,
+            Room.room_name.label("assigned_room"),
+            ChildContract.contract_type,
+            ChildContract.status.label("contract_status"),
+            Household.household_name.label("household"),
+            (Parent.first_name + " " + Parent.last_name).label("parent"),
+            Parent.phone.label("phone"),
+        )
+        .outerjoin(ChildContract, Child.child_id == ChildContract.child_id)
+        .outerjoin(Household, Child.household_id == Household.household_id)
+        .outerjoin(
+            Parent,
+            (Parent.household_id == Household.household_id)
+            & (Parent.is_primary == True),
+        )
+        .outerjoin(
+            latest_room_subq,
+            latest_room_subq.c.child_id == Child.child_id,
+        )
+        .outerjoin(Room, latest_room_subq.c.room_id == Room.room_id)
+    )
+
+    rows = q.all()
+
+    return jsonify([
+        {
+            "child_id": r.child_id,
+            "first_name": r.first_name,
+            "last_name": r.last_name,
+            "assigned_room": r.assigned_room,
+            "contract_type": r.contract_type,
+            "contract_status": r.contract_status,
+            "date_of_birth": r.date_of_birth,
+            "household": r.household,
+            "parent": r.parent,
+            "phone": r.phone,
+        }
+        for r in rows
+    ])
+
+
+# ==========================================================
+# CHILD ROOM ASSIGNMENT (SQLAlchemy)
+# ==========================================================
+@management_bp.route("/api/child-assign", methods=["POST"])
+def assign_child_rooms():
+    try:
+        data = request.get_json() or {}
+
+        child_id = data.get("child_id")
+        new_room_ids = set(data.get("room_ids", []))
+
+        if not child_id:
+            return jsonify({
+                "success": False,
+                "message": "Missing child_id",
+            }), 400
+
+        # 1. close all current active rooms
+        (
+            db.session.query(ChildRoom)
+            .filter(
+                ChildRoom.child_id == child_id,
+                ChildRoom.is_active == True,
+            )
+            .update(
+                {
+                    ChildRoom.is_active: False,
+                    # if you have end_date: ChildRoom.end_date: func.now(),
+                },
+                synchronize_session=False,
+            )
+        )
+
+        # 2. insert new room assignments
+        for room_id in new_room_ids:
+            cr = ChildRoom(
+                child_id=child_id,
+                room_id=room_id,
+                is_active=True,
+            )
+            db.session.add(cr)
+
+        db.session.commit()
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": str(e),
+        }), 500
+
+
+@management_bp.route("/api/child-assign/<int:child_id>", methods=["GET"])
+def get_child_room(child_id):
+    rows = (
+        db.session.query(ChildRoom, Room)
+        .join(Room, ChildRoom.room_id == Room.room_id)
+        .filter(
+            ChildRoom.child_id == child_id,
+            ChildRoom.is_active == True,
+        )
+        # .order_by(ChildRoom.start_date.desc())  # if you have start_date
+        .all()
+    )
+
+    return jsonify([
+        {
+            "room_id": cr.room_id,
+            "room_name": room.room_name,
+            "branch_id": room.branch_id,
+        }
+        for cr, room in rows
+    ])
