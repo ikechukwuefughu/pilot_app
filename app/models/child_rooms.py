@@ -37,6 +37,12 @@ class ChildRoom(db.Model):
         index=True,
     )
 
-    child = db.relationship("Child", lazy="selectin")
-    room = db.relationship("Room", back_populates="child_rooms")
-    # room = db.relationship("Room", lazy="selectin")
+    child = db.relationship(
+        "Child",
+        back_populates="child_rooms"
+    )
+    
+    room = db.relationship(
+        "Room",
+        back_populates="child_rooms"
+    )
