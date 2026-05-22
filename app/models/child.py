@@ -40,6 +40,13 @@ class Child(db.Model):
     household = db.relationship("Household", back_populates="children")
     attendance = db.relationship("ChildAttendance", back_populates="child", cascade="all, delete")
 
+    child_rooms = db.relationship(
+        "ChildRoom",
+        back_populates="child",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
+    
     def to_dict(self):
         return {
             "child_id": self.child_id,
