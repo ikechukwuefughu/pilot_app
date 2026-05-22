@@ -1,3 +1,19 @@
+.form-label {
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.form-control {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.9rem;
+}
+
+h5 {
+    color: #dc2626;   /* red */
+    font-weight: 700;
+    margin-bottom: 0.75rem; /* slightly tighter than Bootstrap mb-3 */
+}
+
 .stats-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
