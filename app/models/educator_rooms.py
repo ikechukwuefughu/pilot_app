@@ -29,6 +29,12 @@ class EducatorRoom(db.Model):
         index=True,
     )
 
+    room = db.relationship(
+        "Room",
+        back_populates="educator_rooms",
+        lazy="selectin",
+    )
+    
     assigned_at = db.Column(
         db.DateTime,
         nullable=False,
