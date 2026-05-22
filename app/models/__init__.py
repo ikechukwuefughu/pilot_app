@@ -47,5 +47,5 @@ __all__ = [
 
     "ChildRoom",
     "ChildAttendance",
-    "ChildAttendanceHistory",
+    "ChildAttendanceHistory"
 ]
