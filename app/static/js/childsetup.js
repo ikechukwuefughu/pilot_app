@@ -90,25 +90,24 @@ document.addEventListener("DOMContentLoaded", () => {
             // CONTRACT
             // ==================================================
             contract: {
-
                 contract_id:
                     card.querySelector('[name="contract_id[]"]')?.value || null,
-
+            
                 contract_type:
                     card.querySelector('[name="contract_type[]"]')?.value || "",
-
+            
                 start_date:
                     card.querySelector('[name="contract_start_date[]"]')?.value || "",
-
+            
                 end_date:
                     card.querySelector('[name="contract_end_date[]"]')?.value || "",
-
-                hours_per_week:
+            
+                hours_per_week:                       // <-- key is "hours_per_week"
                     card.querySelector('[name="agreed_hours_per_week[]"]')?.value || "",
-
+            
                 hourly_rate:
                     card.querySelector('[name="hourly_rate[]"]')?.value || "",
-
+            
                 subsidy_rate:
                     card.querySelector('[name="subsidy_rate[]"]')?.value || ""
             },
