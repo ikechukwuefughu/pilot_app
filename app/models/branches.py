@@ -22,3 +22,10 @@ class Branch(db.Model):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
+
+    def to_dict(self):
+        return {
+            "branch_id": self.branch_id,
+            "branch_name": self.branch_name,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
