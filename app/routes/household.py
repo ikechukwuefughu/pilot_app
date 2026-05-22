@@ -118,18 +118,19 @@ def save_household():
 # -----------------------------------------------------------
 @household_bp.route("/api/households")
 def get_households():
-    households = Household.query.order_by(Household.household_name).all()
-    result = [
-        {
-            "household_id": h.household_id,
-            "household_name": h.household_name
-        }
-        for h in households
-    ]
-    return jsonify(result)
-except Exception as e:
-        current_app.logger.exception("Error fetching households")
-        return jsonify({"error": str(e)}), 500
+    try:
+        households = Household.query.order_by(Household.household_name).all()
+        result = [
+            {
+                "household_id": h.household_id,
+                "household_name": h.household_name
+            }
+            for h in households
+        ]
+        return jsonify(result)
+    except Exception as e:
+            current_app.logger.exception("Error fetching households")
+            return jsonify({"error": str(e)}), 500
 
 # -----------------------------------------------------------
 # GET SINGLE HOUSEHOLD (+ PARENTS)
