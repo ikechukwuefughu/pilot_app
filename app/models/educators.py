@@ -50,15 +50,14 @@ class Educator(db.Model):
         back_populates="educator",
         lazy="selectin",
     )
-
-    attendance_history = db.relationship(
-        "ChildAttendanceHistory",
-        back_populates="educator",
-        lazy="selectin",
-    )
     
     child_attendance = db.relationship(
         "ChildAttendance",
+        back_populates="educator",
+        lazy="selectin",
+    )
+    attendance_history = db.relationship(
+        "ChildAttendanceHistory",
         back_populates="educator",
         lazy="selectin",
     )
