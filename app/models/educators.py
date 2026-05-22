@@ -28,12 +28,12 @@ class Educator(db.Model):
         index=True,
     )
 
-    verified = db.Column(
-        db.Boolean,
-        nullable=False,
-        server_default=db.text("0"),
-        index=True,
-    )
+    # verified = db.Column(
+    #     db.Boolean,
+    #     nullable=False,
+    #     server_default=db.text("0"),
+    #     index=True,
+    # )
 
     start_date = db.Column(db.Date)
 
@@ -70,7 +70,7 @@ class Educator(db.Model):
             "email": self.email,
             "role": self.role,
             "status": self.status,
-            "verified": self.verified,
+            # "verified": self.verified,
             "start_date": self.start_date.isoformat() if self.start_date else None,
             "end_date": self.end_date.isoformat() if self.end_date else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
