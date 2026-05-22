@@ -101,11 +101,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadHouseholds() {
         const res = await fetch("/api/households");
-        const households = await res.json();
-        householdSelect.innerHTML = '<option value="">Select Household...</option>';
-        households.forEach(h =>
-            householdSelect.innerHTML += `<option value="${h.household_id}">${h.household_name}</option>`
-        );
+
+        const text = await res.text();
+        console.log("RAW RESPONSE:", text);
+        
+        try {
+            const data = JSON.parse(text);
+        } catch (e) {
+            console.error("NOT JSON RESPONSE:", text);
+        }
+        // const res = await fetch("/api/households");
+        // const households = await res.json();
+        // householdSelect.innerHTML = '<option value="">Select Household...</option>';
+        // households.forEach(h =>
+        //     householdSelect.innerHTML += `<option value="${h.household_id}">${h.household_name}</option>`
+        // );
     }
 
     async function loadHousehold(id) {
