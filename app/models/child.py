@@ -39,3 +39,17 @@ class Child(db.Model):
     # relationships
     household = db.relationship("Household", back_populates="children")
     # attendance = db.relationship("ChildAttendance", back_populates="child", cascade="all, delete")
+
+    class Child(db.Model):
+        # ...
+        def to_dict(self):
+            return {
+                "child_id": self.child_id,
+                "first_name": self.first_name,
+                "last_name": self.last_name,
+                "date_of_birth": self.date_of_birth.isoformat() if self.date_of_birth else None,
+                "ppsn": self.ppsn,
+                "chick_code": self.chick_code,
+                "ecce_eligible": self.ecce_eligible,
+                "start_date": self.start_date.isoformat() if self.start_date else None,
+            }
