@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify, current_app
 from app import db
-from app.models import Household, Parent  # adjust import path if needed
+# from app.models import Household, Parent  # adjust import path if needed
+from app.models import Household, Parent, Child, ChildContract, ChildMedicalInfo, ChildEmergencyContact, ChildParentRelationship, Branch, Room, Educator, EducatorRoom, EducatorWorkingHour, EducatorAttendance, AttendanceSession, ChildRoom, ChildAttendance, ChildAttendanceHistory
 
 household_bp = Blueprint("household", __name__)
 
