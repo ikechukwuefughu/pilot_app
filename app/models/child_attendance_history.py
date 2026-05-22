@@ -54,8 +54,13 @@ class ChildAttendanceHistory(db.Model):
 
     educator = db.relationship(
         "Educator",
+        back_populates="attendance_history",
         lazy="selectin",
     )
+    # educator = db.relationship(
+    #     "Educator",
+    #     lazy="selectin",
+    # )
 
     def to_dict(self):
         return {
