@@ -14,7 +14,8 @@ Features:
 
 from flask import Blueprint, render_template, request, jsonify
 from app import db
-from app.models import Child, ChildAttendance, ChildAttendanceHistory, ChildRoom, Room, Parent, Educator, EducatorRoom, AttendanceSession
+from app.models import Household, Parent, Child, ChildContract, ChildMedicalInfo, ChildEmergencyContact, ChildParentRelationship, Branch, Room, Educator, EducatorRoom, EducatorWorkingHour, EducatorAttendance, AttendanceSession, ChildRoom, ChildAttendance, ChildAttendanceHistory
+# from app.models import Child, ChildAttendance, ChildAttendanceHistory, ChildRoom, Room, Parent, Educator, EducatorRoom, AttendanceSession
 
 attendance_bp = Blueprint("attendance", __name__)
 
