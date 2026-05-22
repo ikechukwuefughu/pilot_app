@@ -102,6 +102,13 @@ class ChildAttendance(db.Model):
         lazy="selectin",
     )
 
+    history = db.relationship(
+        "ChildAttendanceHistory",
+        back_populates="attendance",
+        cascade="all, delete-orphan",
+        lazy="selectin"
+    )
+    
     def to_dict(self):
         return {
             "attendance_id": self.attendance_id,
