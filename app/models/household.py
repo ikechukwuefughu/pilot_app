@@ -34,7 +34,7 @@ class Household(db.Model):
         lazy="selectin",
     )
 
-    Relationship to Child
+    # Relationship to Child
     children = db.relationship(
         "Child",
         back_populates="household",
