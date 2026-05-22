@@ -289,45 +289,109 @@ document.addEventListener("DOMContentLoaded", () => {
         // ==================================================
         // RELATIONSHIPS
         // ==================================================
+        const relationshipContainer =
+            card.querySelector(".parent-relationship-container");
+        
+        const relationshipTemplate =
+            document.getElementById("relationshipTemplate");
+        
         const relationships = prefill.relationships || [];
-
+        
         if (relationshipContainer && relationshipTemplate) {
         
+            // If we already have saved relationships, render those
             if (relationships.length) {
+        
                 relationships.forEach(r => {
-                    const relEl = relationshipTemplate.content.cloneNode(true);
         
-                    const select = relEl.querySelector(".relationship-parent");
-                    const typeSelect = relEl.querySelector(".relationship-type");
-                    const guardianCheckbox = relEl.querySelector(".legal-guardian");
+                    const relEl =
+                        relationshipTemplate.content.cloneNode(true);
         
-                    // populate select with all parents
-                    select.innerHTML = householdParents.map(p => `
-                        <option value="${p.parent_id}">
-                            ${p.first_name} ${p.last_name}
-                        </option>
-                    `).join("");
+                    const select =
+                        relEl.querySelector(".relationship-parent");
         
-                    select.value = r.parent_id;
+                    const typeSelect =
+                        relEl.querySelector(".relationship-type");
+        
+                    const guardianCheckbox =
+                        relEl.querySelector(".legal-guardian");
+        
+                    // Populate parent dropdown with all household parents
+                    select.innerHTML =
+                        householdParents.map(p => `
+                            <option value="${p.parent_id}">
+                                ${p.first_name} ${p.last_name}
+                            </option>
+                        `).join("");
+        
+                    // Set values from existing relationship
+                    select.value = r.parent_id || "";
                     typeSelect.value = r.relationship_type || r.relationship || "";
                     guardianCheckbox.checked = !!r.legal_guardian;
         
                     relationshipContainer.appendChild(relEl);
                 });
+        
             } else {
-                // fall back to one relationship row per parent (your current behavior)
+                // No saved relationships: fallback to one row per parent (old behavior)
                 householdParents.forEach(parent => {
-                    const relEl = relationshipTemplate.content.cloneNode(true);
-                    const select = relEl.querySelector(".relationship-parent");
+        
+                    const relEl =
+                        relationshipTemplate.content.cloneNode(true);
+        
+                    const select =
+                        relEl.querySelector(".relationship-parent");
+        
                     select.innerHTML = `
                         <option value="${parent.parent_id}">
                             ${parent.first_name} ${parent.last_name}
                         </option>
                     `;
+        
                     relationshipContainer.appendChild(relEl);
                 });
             }
         }
+
+        // const relationships = prefill.relationships || [];
+
+        // if (relationshipContainer && relationshipTemplate) {
+        
+        //     if (relationships.length) {
+        //         relationships.forEach(r => {
+        //             const relEl = relationshipTemplate.content.cloneNode(true);
+        
+        //             const select = relEl.querySelector(".relationship-parent");
+        //             const typeSelect = relEl.querySelector(".relationship-type");
+        //             const guardianCheckbox = relEl.querySelector(".legal-guardian");
+        
+        //             // populate select with all parents
+        //             select.innerHTML = householdParents.map(p => `
+        //                 <option value="${p.parent_id}">
+        //                     ${p.first_name} ${p.last_name}
+        //                 </option>
+        //             `).join("");
+        
+        //             select.value = r.parent_id;
+        //             typeSelect.value = r.relationship_type || r.relationship || "";
+        //             guardianCheckbox.checked = !!r.legal_guardian;
+        
+        //             relationshipContainer.appendChild(relEl);
+        //         });
+        //     } else {
+        //         // fall back to one relationship row per parent (your current behavior)
+        //         householdParents.forEach(parent => {
+        //             const relEl = relationshipTemplate.content.cloneNode(true);
+        //             const select = relEl.querySelector(".relationship-parent");
+        //             select.innerHTML = `
+        //                 <option value="${parent.parent_id}">
+        //                     ${parent.first_name} ${parent.last_name}
+        //                 </option>
+        //             `;
+        //             relationshipContainer.appendChild(relEl);
+        //         });
+        //     }
+        // }
 
         // const relationshipContainer =
         //     card.querySelector(".parent-relationship-container");
