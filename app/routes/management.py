@@ -203,9 +203,7 @@ def educators():
             data = request.get_json() or {}
 
             educator = Educator(
-                if not data.get("name"):
-                    return jsonify({"success": False, "message": "Name required"}), 400,
-                # educator_name=data.get("name"),
+                educator_name=data.get("name"),
                 phone=data.get("phone"),
                 email=data.get("email"),
                 role=data.get("role"),
