@@ -17,7 +17,7 @@ class Educator(db.Model):
     role = db.Column(
         db.Unicode(20),
         nullable=False,
-        server_default=db.text("'educator'"),
+        server_default=db.text("'Lead Educator'"),
         index=True,
     )
 
