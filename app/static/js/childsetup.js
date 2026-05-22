@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 contract_id:
                     card.querySelector('[name="contract_id[]"]')?.value || null,
 
-                type:
+                contract_type:
                     card.querySelector('[name="contract_type[]"]')?.value || "",
 
                 start_date:
