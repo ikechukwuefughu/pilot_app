@@ -46,7 +46,13 @@ h5 {
 .status-in { background: #dcfce7; color: #166534; }
 .status-out { background: #fee2e2; color: #991b1b; }
 
-.form-section { margin-bottom: 2rem; }
+.form-section { margin-bottom: 1rem; }
+
+.row.g-1 > [class*="col-"],
+.row.g-2 > [class*="col-"] {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+}
 
 .empty-state {
     text-align: center;
