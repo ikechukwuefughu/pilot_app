@@ -62,3 +62,14 @@ class AttendanceSession(db.Model):
         back_populates="session",
         lazy="selectin",
     )
+
+    def to_dict(self):
+        return {
+            "session_id": self.session_id,
+            "room_id": self.room_id,
+            "educator_id": self.educator_id,
+            "session_type": self.session_type,
+            "start_time": self.start_time.isoformat() if self.start_time else None,
+            "end_time": self.end_time.isoformat() if self.end_time else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
