@@ -35,11 +35,11 @@ class Household(db.Model):
     )
 
     # Relationship to Child
-    children = db.relationship(
-        "Child",
-        back_populates="household",
-        lazy="selectin"
-    )
+    # children = db.relationship(
+    #     "Child",
+    #     back_populates="household",
+    #     lazy="selectin"
+    # )
 
     def to_dict(self):
         return {
