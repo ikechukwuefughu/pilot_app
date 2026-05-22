@@ -56,3 +56,17 @@ class Educator(db.Model):
         back_populates="educator",
         lazy="selectin",
     )
+
+    def to_dict(self):
+        return {
+            "educator_id": self.educator_id,
+            "educator_name": self.educator_name,
+            "phone": self.phone,
+            "email": self.email,
+            "role": self.role,
+            "status": self.status,
+            "verified": self.verified,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "end_date": self.end_date.isoformat() if self.end_date else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
