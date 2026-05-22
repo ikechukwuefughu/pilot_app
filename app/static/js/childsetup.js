@@ -286,29 +286,6 @@ document.addEventListener("DOMContentLoaded", () => {
             c.subsidy_rate || "";
 
         // ==================================================
-        // CONTRACT
-        // ==================================================
-        // const c = prefill.contract || {};
-
-        // card.querySelector('[name="contract_type[]"]').value =
-        //     c.type || "";
-
-        // card.querySelector('[name="contract_start_date[]"]').value =
-        //     c.start_date || "";
-
-        // card.querySelector('[name="contract_end_date[]"]').value =
-        //     c.end_date || "";
-
-        // card.querySelector('[name="agreed_hours_per_week[]"]').value =
-        //     c.hours_per_week || "";
-
-        // card.querySelector('[name="hourly_rate[]"]').value =
-        //     c.hourly_rate || "";
-
-        // card.querySelector('[name="subsidy_rate[]"]').value =
-        //     c.subsidy_rate || "";
-
-        // ==================================================
         // RELATIONSHIPS
         // ==================================================
         const relationshipContainer =
@@ -321,9 +298,8 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (relationshipContainer && relationshipTemplate) {
         
-            // If we already have saved relationships, render those
             if (relationships.length) {
-        
+                // Use relationships returned from the backend
                 relationships.forEach(r => {
         
                     const relEl =
@@ -346,7 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             </option>
                         `).join("");
         
-                    // Set values from existing relationship
+                    // Set existing values
                     select.value = r.parent_id || "";
                     typeSelect.value = r.relationship_type || r.relationship || "";
                     guardianCheckbox.checked = !!r.legal_guardian;
@@ -355,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
         
             } else {
-                // No saved relationships: fallback to one row per parent (old behavior)
+                // No saved relationships yet — fall back to 1 per parent
                 householdParents.forEach(parent => {
         
                     const relEl =
@@ -375,70 +351,71 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // // ==================================================
+        // // RELATIONSHIPS
+        // // ==================================================
+        // const relationshipContainer =
+        //     card.querySelector(".parent-relationship-container");
+        
+        // const relationshipTemplate =
+        //     document.getElementById("relationshipTemplate");
+        
         // const relationships = prefill.relationships || [];
-
+        
         // if (relationshipContainer && relationshipTemplate) {
         
+        //     // If we already have saved relationships, render those
         //     if (relationships.length) {
+        
         //         relationships.forEach(r => {
-        //             const relEl = relationshipTemplate.content.cloneNode(true);
         
-        //             const select = relEl.querySelector(".relationship-parent");
-        //             const typeSelect = relEl.querySelector(".relationship-type");
-        //             const guardianCheckbox = relEl.querySelector(".legal-guardian");
+        //             const relEl =
+        //                 relationshipTemplate.content.cloneNode(true);
         
-        //             // populate select with all parents
-        //             select.innerHTML = householdParents.map(p => `
-        //                 <option value="${p.parent_id}">
-        //                     ${p.first_name} ${p.last_name}
-        //                 </option>
-        //             `).join("");
+        //             const select =
+        //                 relEl.querySelector(".relationship-parent");
         
-        //             select.value = r.parent_id;
+        //             const typeSelect =
+        //                 relEl.querySelector(".relationship-type");
+        
+        //             const guardianCheckbox =
+        //                 relEl.querySelector(".legal-guardian");
+        
+        //             // Populate parent dropdown with all household parents
+        //             select.innerHTML =
+        //                 householdParents.map(p => `
+        //                     <option value="${p.parent_id}">
+        //                         ${p.first_name} ${p.last_name}
+        //                     </option>
+        //                 `).join("");
+        
+        //             // Set values from existing relationship
+        //             select.value = r.parent_id || "";
         //             typeSelect.value = r.relationship_type || r.relationship || "";
         //             guardianCheckbox.checked = !!r.legal_guardian;
         
         //             relationshipContainer.appendChild(relEl);
         //         });
+        
         //     } else {
-        //         // fall back to one relationship row per parent (your current behavior)
+        //         // No saved relationships: fallback to one row per parent (old behavior)
         //         householdParents.forEach(parent => {
-        //             const relEl = relationshipTemplate.content.cloneNode(true);
-        //             const select = relEl.querySelector(".relationship-parent");
+        
+        //             const relEl =
+        //                 relationshipTemplate.content.cloneNode(true);
+        
+        //             const select =
+        //                 relEl.querySelector(".relationship-parent");
+        
         //             select.innerHTML = `
         //                 <option value="${parent.parent_id}">
         //                     ${parent.first_name} ${parent.last_name}
         //                 </option>
         //             `;
+        
         //             relationshipContainer.appendChild(relEl);
         //         });
         //     }
-        // }
-
-        // const relationshipContainer =
-        //     card.querySelector(".parent-relationship-container");
-
-        // const relationshipTemplate =
-        //     document.getElementById("relationshipTemplate");
-
-        // if (relationshipContainer && relationshipTemplate) {
-
-        //     householdParents.forEach(parent => {
-
-        //         const rel =
-        //             relationshipTemplate.content.cloneNode(true);
-
-        //         const select =
-        //             rel.querySelector(".relationship-parent");
-
-        //         select.innerHTML = `
-        //             <option value="${parent.parent_id}">
-        //                 ${parent.first_name} ${parent.last_name}
-        //             </option>
-        //         `;
-
-        //         relationshipContainer.appendChild(rel);
-        //     });
         // }
 
         // ==================================================
@@ -580,72 +557,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
         return children;
     }
-
-    // async function loadHousehold(id) {
-
-    //     const res =
-    //         await fetch(`${API}/household/${id}`);
-
-    //     const data =
-    //         await res.json();
-
-    //     householdParents =
-    //         data.parents || [];
-
-    //     parentPreviewContainer.innerHTML =
-    //         householdParents.length
-    //             ? householdParents.map(p => `
-    //                 <div>
-    //                     <b>${p.first_name} ${p.last_name}</b>
-    //                 </div>
-    //             `).join("")
-    //             : "No parents";
-
-    //     const grouped = {};
-
-    //     data.children.forEach(row => {
-
-    //         if (!grouped[row.child_id]) {
-
-    //             grouped[row.child_id] = {
-
-    //                 ...row,
-
-    //                 // medical: {
-    //                 //     allergies: row.allergies || "",
-    //                 //     medical_notes: row.medical_notes || ""
-    //                 // },
-    //                 child_id: row.child_id,
-    //                 first_name: row.first_name,
-    //                 last_name: row.last_name,
-    //                 date_of_birth: row.date_of_birth,
-    //                 ppsn: row.ppsn,
-    //                 chick_code: row.chick_code,
-    //                 ecce_eligible: row.ecce_eligible,
-    //                 start_date: row.start_date,
-    //                 medical: row.medical || {},
-                        
-    //                 contract: null
-    //             };
-    //         }
-
-    //         if (row.contract_id) {
-
-    //             grouped[row.child_id].contract = {
-
-    //                 contract_id: row.contract_id,
-    //                 type: row.contract_type,
-    //                 start_date: row.contract_start_date,
-    //                 end_date: row.end_date,
-    //                 hours_per_week: row.agreed_hours_per_week,
-    //                 hourly_rate: row.hourly_rate,
-    //                 subsidy_rate: row.subsidy_rate
-    //             };
-    //         }
-    //     });
-
-    //     return Object.values(grouped);
-    // }
 
     // ======================================================
     // HOUSEHOLD CHANGE
