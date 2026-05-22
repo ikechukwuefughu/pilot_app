@@ -51,6 +51,13 @@ class Room(db.Model):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
+
+    child_rooms = db.relationship(
+        "ChildRoom",
+        back_populates="room",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
     
     def to_dict(self):
         return {
