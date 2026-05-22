@@ -45,17 +45,17 @@ class Educator(db.Model):
         server_default=func.sysutcdatetime(),
     )
 
-    # attendance_sessions = db.relationship(
-    #     "AttendanceSession",
-    #     back_populates="educator",
-    #     lazy="selectin",
-    # )
+    attendance_sessions = db.relationship(
+        "AttendanceSession",
+        back_populates="educator",
+        lazy="selectin",
+    )
 
-    # child_attendance = db.relationship(
-    #     "ChildAttendance",
-    #     back_populates="educator",
-    #     lazy="selectin",
-    # )
+    child_attendance = db.relationship(
+        "ChildAttendance",
+        back_populates="educator",
+        lazy="selectin",
+    )
 
     def to_dict(self):
         return {
