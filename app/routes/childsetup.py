@@ -70,19 +70,32 @@ def save_children():
             # CONTRACT UPSERT
             # ==================================================
             contract_id = contract.get("contract_id")
-
+            
             if contract_id:
                 contract_obj = ChildContract.query.get(contract_id)
             else:
                 contract_obj = ChildContract(child_id=child_id)
                 db.session.add(contract_obj)
-
-            contract_obj.contract_type = contract.get("type")
-            contract_obj.start_date = contract.get("start_date")
-            contract_obj.end_date = contract.get("end_date")
-            contract_obj.agreed_hours_per_week = contract.get("agreed_hours_per_week")
-            contract_obj.hourly_rate = contract.get("hourly_rate")
-            contract_obj.subsidy_rate = contract.get("subsidy_rate")
+            
+            # NOTE: use the JSON keys from buildPayload
+            raw_type = (contract.get("contract_type") or "").strip()
+            raw_hours = (contract.get("hours_per_week") or "").strip()
+            
+            # enforce non-null contract_type because DB requires it
+            if not raw_type:
+                return jsonify({
+                    "success": False,
+                    "error": "Contract type is required for each saved contract."
+                }), 400
+            
+            hours = float(raw_hours) if raw_hours else None
+            
+            contract_obj.contract_type = raw_type
+            contract_obj.start_date = contract.get("start_date") or None
+            contract_obj.end_date = contract.get("end_date") or None
+            contract_obj.agreed_hours_per_week = hours
+            contract_obj.hourly_rate = contract.get("hourly_rate") or None
+            contract_obj.subsidy_rate = contract.get("subsidy_rate") or None
             contract_obj.status = status
 
             # ==================================================
