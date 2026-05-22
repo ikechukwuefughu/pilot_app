@@ -143,20 +143,13 @@ def educators():
                 .order_by(Educator.educator_name)
                 .all()
             )
-
+            
             result = []
+            
             for e in rows:
-                # load related rooms
-                er_rows = (
-                    db.session.query(EducatorRoom, Room)
-                    .join(Room, EducatorRoom.room_id == Room.room_id)
-                    .filter(EducatorRoom.educator_id == e.educator_id)
-                    .all()
-                )
-
-                room_ids = [er.room_id for er, _ in er_rows]
-                room_names = ", ".join(r.room_name for _, r in er_rows)
-
+                room_ids = [er.room_id for er in e.educator_rooms]
+                room_names = ", ".join(er.room.room_name for er in e.educator_rooms if er.room)
+            
                 result.append({
                     "id": e.educator_id,
                     "name": e.educator_name,
@@ -169,6 +162,37 @@ def educators():
                     "room_ids": room_ids,
                     "rooms": room_names,
                 })
+            # rows = (
+            #     db.session.query(Educator)
+            #     .order_by(Educator.educator_name)
+            #     .all()
+            # )
+
+            # result = []
+            # for e in rows:
+            #     # load related rooms
+            #     er_rows = (
+            #         db.session.query(EducatorRoom, Room)
+            #         .join(Room, EducatorRoom.room_id == Room.room_id)
+            #         .filter(EducatorRoom.educator_id == e.educator_id)
+            #         .all()
+            #     )
+
+            #     room_ids = [er.room_id for er, _ in er_rows]
+            #     room_names = ", ".join(r.room_name for _, r in er_rows)
+
+            #     result.append({
+            #         "id": e.educator_id,
+            #         "name": e.educator_name,
+            #         "phone": e.phone,
+            #         "email": e.email,
+            #         "role": e.role,
+            #         "status": e.status,
+            #         "start_date": e.start_date,
+            #         "end_date": e.end_date,
+            #         "room_ids": room_ids,
+            #         "rooms": room_names,
+            #     })
 
             return jsonify(result)
 
@@ -179,11 +203,13 @@ def educators():
             data = request.get_json() or {}
 
             educator = Educator(
-                educator_name=data.get("name"),
+                if not data.get("name"):
+                    return jsonify({"success": False, "message": "Name required"}), 400,
+                # educator_name=data.get("name"),
                 phone=data.get("phone"),
                 email=data.get("email"),
                 role=data.get("role"),
-                status="Enabled",
+                status="enabled",
                 start_date=data.get("start_date"),
                 end_date=data.get("end_date"),
             )
