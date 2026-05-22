@@ -142,7 +142,7 @@ def save_children():
                     child_id=child_id,
                     parent_id=rel.get("parent_id"),
                     relationship_type=rel.get("relationship"),
-                    legal_guardian=bool(rel.get("legal_guardian")),
+                    legal_guardian=bool(rel.get("is_legal_guardian")),
                     authorized_pickup=False,
                     emergency_contact=False
                 ))
