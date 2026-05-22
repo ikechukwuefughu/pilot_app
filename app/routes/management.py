@@ -139,7 +139,10 @@ def rooms():
             "message": str(e),
         }), 500
 
-
+@educator_bp.route("/management/api/educators", methods=["POST"])
+def create_educator():
+    print("HIT ROUTE")  # check logs
+    return {"status": "ok"}
 # ==========================================================
 # EDUCATORS (SQLAlchemy)
 # ==========================================================
