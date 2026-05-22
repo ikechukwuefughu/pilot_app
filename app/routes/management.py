@@ -162,37 +162,6 @@ def educators():
                     "room_ids": room_ids,
                     "rooms": room_names,
                 })
-            # rows = (
-            #     db.session.query(Educator)
-            #     .order_by(Educator.educator_name)
-            #     .all()
-            # )
-
-            # result = []
-            # for e in rows:
-            #     # load related rooms
-            #     er_rows = (
-            #         db.session.query(EducatorRoom, Room)
-            #         .join(Room, EducatorRoom.room_id == Room.room_id)
-            #         .filter(EducatorRoom.educator_id == e.educator_id)
-            #         .all()
-            #     )
-
-            #     room_ids = [er.room_id for er, _ in er_rows]
-            #     room_names = ", ".join(r.room_name for _, r in er_rows)
-
-            #     result.append({
-            #         "id": e.educator_id,
-            #         "name": e.educator_name,
-            #         "phone": e.phone,
-            #         "email": e.email,
-            #         "role": e.role,
-            #         "status": e.status,
-            #         "start_date": e.start_date,
-            #         "end_date": e.end_date,
-            #         "room_ids": room_ids,
-            #         "rooms": room_names,
-            #     })
 
             return jsonify(result)
 
@@ -250,11 +219,17 @@ def educators():
 
     except Exception as e:
         db.session.rollback()
+    #     return jsonify({
+    #         "success": False,
+    #         "message": str(e),
+    #     }), 500
+        import traceback
+        print(traceback.format_exc())  # prints full stack to server logs
         return jsonify({
-            "success": False,
-            "message": str(e),
-        }), 500
-
+        "success": False,
+        "message": str(e),
+        "detail": traceback.format_exc(),  # remove before production
+    }), 500
 
 # ==========================================================
 # EDUCATOR ROOM ASSIGNMENT (SQLAlchemy)
