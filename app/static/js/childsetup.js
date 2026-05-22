@@ -266,24 +266,47 @@ document.addEventListener("DOMContentLoaded", () => {
         // CONTRACT
         // ==================================================
         const c = prefill.contract || {};
-
+        
         card.querySelector('[name="contract_type[]"]').value =
-            c.type || "";
-
+            c.contract_type || "";              // use contract_type
+        
         card.querySelector('[name="contract_start_date[]"]').value =
             c.start_date || "";
-
+        
         card.querySelector('[name="contract_end_date[]"]').value =
             c.end_date || "";
-
+        
         card.querySelector('[name="agreed_hours_per_week[]"]').value =
-            c.hours_per_week || "";
-
+            c.agreed_hours_per_week || "";      // use agreed_hours_per_week
+        
         card.querySelector('[name="hourly_rate[]"]').value =
             c.hourly_rate || "";
-
+        
         card.querySelector('[name="subsidy_rate[]"]').value =
             c.subsidy_rate || "";
+
+        // ==================================================
+        // CONTRACT
+        // ==================================================
+        // const c = prefill.contract || {};
+
+        // card.querySelector('[name="contract_type[]"]').value =
+        //     c.type || "";
+
+        // card.querySelector('[name="contract_start_date[]"]').value =
+        //     c.start_date || "";
+
+        // card.querySelector('[name="contract_end_date[]"]').value =
+        //     c.end_date || "";
+
+        // card.querySelector('[name="agreed_hours_per_week[]"]').value =
+        //     c.hours_per_week || "";
+
+        // card.querySelector('[name="hourly_rate[]"]').value =
+        //     c.hourly_rate || "";
+
+        // card.querySelector('[name="subsidy_rate[]"]').value =
+        //     c.subsidy_rate || "";
 
         // ==================================================
         // RELATIONSHIPS
