@@ -80,7 +80,7 @@ def save_children():
             contract_obj.contract_type = contract.get("type")
             contract_obj.start_date = contract.get("start_date")
             contract_obj.end_date = contract.get("end_date")
-            contract_obj.agreed_hours_per_week = contract.get("hours_per_week")
+            contract_obj.agreed_hours_per_week = contract.get("agreed_hours_per_week")
             contract_obj.hourly_rate = contract.get("hourly_rate")
             contract_obj.subsidy_rate = contract.get("subsidy_rate")
             contract_obj.status = status
@@ -129,7 +129,7 @@ def save_children():
                     child_id=child_id,
                     parent_id=rel.get("parent_id"),
                     relationship_type=rel.get("relationship"),
-                    legal_guardian=bool(rel.get("is_legal_guardian")),
+                    legal_guardian=bool(rel.get("legal_guardian")),
                     authorized_pickup=False,
                     emergency_contact=False
                 ))
