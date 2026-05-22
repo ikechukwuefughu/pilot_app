@@ -56,3 +56,17 @@ class ChildAttendanceHistory(db.Model):
         "Educator",
         lazy="selectin",
     )
+
+    def to_dict(self):
+        return {
+            "history_id": self.history_id,
+            "attendance_id": self.attendance_id,
+            "action_type": self.action_type,
+            "old_snapshot": self.old_snapshot,
+            "new_snapshot": self.new_snapshot,
+            "changed_by": self.changed_by,
+            "change_reason": self.change_reason,
+            "ip_address": self.ip_address,
+            "device_info": self.device_info,
+            "changed_at": self.changed_at.isoformat() if self.changed_at else None,
+        }
