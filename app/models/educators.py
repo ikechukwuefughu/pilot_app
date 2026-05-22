@@ -33,7 +33,7 @@ class Educator(db.Model):
     #     nullable=False,
     #     server_default=db.text("0"),
     #     index=True,
-    # )
+    # ) 
 
     start_date = db.Column(db.Date)
 
