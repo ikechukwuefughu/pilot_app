@@ -763,7 +763,8 @@ async function saveAssignment() {
         },
         body: JSON.stringify({
             educator_id:
-                document.getElementById("assignEducator").value,
+                // document.getElementById("assignEducator").value,
+                parseInt(document.getElementById("assignEducator").value),
 
             room_ids: Array.from(
                 document.getElementById("assignRoom")
