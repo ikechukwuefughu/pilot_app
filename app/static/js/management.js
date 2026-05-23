@@ -782,9 +782,29 @@ async function saveAssignment() {
             room_ids: roomIds
         })
     });
-
-    const result = await res.json();
+    
+    // guard against non-JSON error responses
+    const result = res.headers.get("content-type")?.includes("application/json")
+        ? await res.json()
+        : { success: false, message: await res.text() };
+    
     console.log("assign result:", result);
+    
+    if (!result.success) {
+        alert("Failed to assign room: " + result.message);
+        return;
+    }
+    // const res = await fetch(API.assign, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({
+    //         educator_id: educatorId,
+    //         room_ids: roomIds
+    //     })
+    // });
+
+    // const result = await res.json();
+    // console.log("assign result:", result);
 
     closeAllModals();
     await refreshAll();
