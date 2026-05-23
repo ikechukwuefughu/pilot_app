@@ -43,7 +43,7 @@ def load_attendance():
         return jsonify({"success": False, "error": "date is required"}), 400
 
     # Base query, equivalent to your LEFT JOINs
-    try
+    try:
         q = (
             db.session.query(
                 Child.child_id,
