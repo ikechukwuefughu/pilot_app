@@ -85,9 +85,6 @@ def branches():
 @management_bp.route("/api/rooms", methods=["GET", "POST"])
 def rooms():
     try:
-        # ----------------------------------------------
-        # GET ROOMS
-        # ----------------------------------------------
         if request.method == "GET":
             rows = (
                 db.session.query(Room, Branch)
@@ -107,9 +104,6 @@ def rooms():
                 })
             return jsonify(result)
 
-        # ----------------------------------------------
-        # CREATE ROOM
-        # ----------------------------------------------
         data = request.get_json() or {}
         room = Room(
             branch_id=data.get("branch_id"),
@@ -129,6 +123,53 @@ def rooms():
             "message": str(e),
             "detail": traceback.format_exc()
         }), 500
+# @management_bp.route("/api/rooms", methods=["GET", "POST"])
+# def rooms():
+#     try:
+#         # ----------------------------------------------
+#         # GET ROOMS
+#         # ----------------------------------------------
+#         if request.method == "GET":
+#             rows = (
+#                 db.session.query(Room, Branch)
+#                 .outerjoin(Branch, Room.branch_id == Branch.branch_id)
+#                 .order_by(Branch.branch_name, Room.room_name)
+#                 .all()
+#             )
+#             result = []
+#             for room, branch in rows:
+#                 result.append({
+#                     "id": room.room_id,
+#                     "name": room.room_name,
+#                     "capacity": room.room_capacity,
+#                     "type": room.room_type,
+#                     "branch_id": room.branch_id,
+#                     "branch_name": branch.branch_name if branch else None,
+#                 })
+#             return jsonify(result)
+
+#         # ----------------------------------------------
+#         # CREATE ROOM
+#         # ----------------------------------------------
+#         data = request.get_json() or {}
+#         room = Room(
+#             branch_id=data.get("branch_id"),
+#             room_name=data.get("name"),
+#             room_capacity=data.get("capacity"),
+#             room_type=data.get("type"),
+#         )
+#         db.session.add(room)
+#         db.session.commit()
+#         return jsonify({"success": True, "message": "Room created successfully"})
+
+#     except Exception as e:
+#         db.session.rollback()
+#         import traceback
+#         return jsonify({
+#             "success": False,
+#             "message": str(e),
+#             "detail": traceback.format_exc()
+#         }), 500
 
 # ==========================================================
 # EDUCATORS (SQLAlchemy)
