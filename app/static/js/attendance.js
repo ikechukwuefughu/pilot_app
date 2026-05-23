@@ -544,8 +544,15 @@ document.getElementById("attendanceEducator")
                 fetch(`/api/attendance/session/${activeEducatorId}`)
             ]);
 
-            const room = await roomRes.json();
-            const session = await sessionRes.json();
+            const roomText = await roomRes.text();
+            const sessionText = await sessionRes.text();
+            console.log("ROOM RAW:", roomText);
+            console.log("SESSION RAW:", sessionText);
+            
+            const room = JSON.parse(roomText);
+            const session = JSON.parse(sessionText);
+            // const room = await roomRes.json();
+            // const session = await sessionRes.json();
 
             if (room) {
                 activeRoomId = room.id;
