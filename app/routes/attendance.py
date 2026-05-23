@@ -43,74 +43,83 @@ def load_attendance():
         return jsonify({"success": False, "error": "date is required"}), 400
 
     # Base query, equivalent to your LEFT JOINs
-    q = (
-        db.session.query(
-            Child.child_id,
-            (Child.first_name + " " + Child.last_name).label("child_name"),
-            ChildAttendance.status,
-            ChildAttendance.check_in_time,
-            ChildAttendance.check_out_time,
-            ChildAttendance.pickup_by_parent_id,
-            ChildAttendance.notes,
-            Room.room_id,
-            Room.room_name,
-            (Parent.first_name + " " + Parent.last_name).label("pickup_by"),
+    try
+        q = (
+            db.session.query(
+                Child.child_id,
+                (Child.first_name + " " + Child.last_name).label("child_name"),
+                ChildAttendance.status,
+                ChildAttendance.check_in_time,
+                ChildAttendance.check_out_time,
+                ChildAttendance.pickup_by_parent_id,
+                ChildAttendance.notes,
+                Room.room_id,
+                Room.room_name,
+                (Parent.first_name + " " + Parent.last_name).label("pickup_by"),
+            )
+            .outerjoin(
+                ChildAttendance,
+                (ChildAttendance.child_id == Child.child_id)
+                & (ChildAttendance.attendance_date == selected_date),
+            )
+            .outerjoin(
+                ChildRoom,
+                (ChildRoom.child_id == Child.child_id)
+                & (ChildRoom.is_active == True),
+            )
+            .outerjoin(Room, ChildRoom.room_id == Room.room_id)
+            .outerjoin(
+                Parent,
+                ChildAttendance.pickup_by_parent_id == Parent.parent_id,
+            )
+            .order_by(Child.first_name)
         )
-        .outerjoin(
-            ChildAttendance,
-            (ChildAttendance.child_id == Child.child_id)
-            & (ChildAttendance.attendance_date == selected_date),
-        )
-        .outerjoin(
-            ChildRoom,
-            (ChildRoom.child_id == Child.child_id)
-            & (ChildRoom.is_active == True),
-        )
-        .outerjoin(Room, ChildRoom.room_id == Room.room_id)
-        .outerjoin(
-            Parent,
-            ChildAttendance.pickup_by_parent_id == Parent.parent_id,
-        )
-        .order_by(Child.first_name)
-    )
-
-    rows = q.all()
-
-    children = []
-    for row in rows:
-        child_dict = {
-            "child_id": row.child_id,
-            "child_name": row.child_name,
-            "status": row.status,
-            "check_in_time": row.check_in_time,
-            "check_out_time": row.check_out_time,
-            "pickup_by_parent_id": row.pickup_by_parent_id,
-            "notes": row.notes,
-            "room_id": row.room_id,
-            "room_name": row.room_name,
-            "pickup_by": row.pickup_by,
-        }
-
-        # Fetch parents for this child (household-based)
-        parents = (
-            db.session.query(Parent)
-            .join(Child, Child.household_id == Parent.household_id)
-            .filter(Child.child_id == row.child_id)
-            .all()
-        )
-
-        child_dict["parents"] = [
-            {
-                "parent_id": p.parent_id,
-                "name": f"{p.first_name} {p.last_name}",
+    
+        rows = q.all()
+    
+        children = []
+        for row in rows:
+            child_dict = {
+                "child_id": row.child_id,
+                "child_name": row.child_name,
+                "status": row.status,
+                # "check_in_time": row.check_in_time,
+                # "check_out_time": row.check_out_time,
+                "check_in_time": row.check_in_time.isoformat() if row.check_in_time else None,
+                "check_out_time": row.check_out_time.isoformat() if row.check_out_time else None,
+                "pickup_by_parent_id": row.pickup_by_parent_id,
+                "notes": row.notes,
+                "room_id": row.room_id,
+                "room_name": row.room_name,
+                "pickup_by": row.pickup_by,
             }
-            for p in parents
-        ]
-
-        children.append(child_dict)
-
-    return jsonify(children)
-
+    
+            # Fetch parents for this child (household-based)
+            parents = (
+                db.session.query(Parent)
+                .join(Child, Child.household_id == Parent.household_id)
+                .filter(Child.child_id == row.child_id)
+                .all()
+            )
+    
+            child_dict["parents"] = [
+                {
+                    "parent_id": p.parent_id,
+                    "name": f"{p.first_name} {p.last_name}",
+                }
+                for p in parents
+            ]
+    
+            children.append(child_dict)
+    
+        return jsonify(children)
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "success": False,
+            "message": str(e),
+            "detail": traceback.format_exc()
+        }), 500
 
 # ==========================================================
 # Load Educators list (SQLAlchemy)
