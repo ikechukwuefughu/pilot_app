@@ -65,16 +65,33 @@ def save_household():
 
         for p_data in data.get("parents", []):
             parent_id = p_data.get("parent_id")
-
+            
+            # cast to int if present
             if parent_id:
-                parent = existing_parents.get(parent_id)
+                try:
+                    parent_id = int(parent_id)
+                except (ValueError, TypeError):
+                    parent_id = None
+        
+            if parent_id:
+                parent = existing_parents.get(parent_id)  # now matches int key
                 if not parent:
-                    # If a parent_id is sent that doesn't belong to this household, skip or raise
-                    # Here we'll just skip to avoid inconsistent client data
                     continue
             else:
                 parent = Parent(household_id=household_id)
                 db.session.add(parent)
+        # for p_data in data.get("parents", []):
+        #     parent_id = p_data.get("parent_id")
+
+        #     if parent_id:
+        #         parent = existing_parents.get(parent_id)
+        #         if not parent:
+        #             # If a parent_id is sent that doesn't belong to this household, skip or raise
+        #             # Here we'll just skip to avoid inconsistent client data
+        #             continue
+        #     else:
+        #         parent = Parent(household_id=household_id)
+        #         db.session.add(parent)
 
             parent.first_name = p_data.get("first_name")
             parent.last_name = p_data.get("last_name")
