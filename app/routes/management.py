@@ -3,7 +3,15 @@
 from flask import Blueprint, render_template, request, jsonify
 from app import db
 from app.models import Household, Parent, Child, ChildContract, ChildMedicalInfo, ChildEmergencyContact, ChildParentRelationship, Branch, Room, Educator, EducatorRoom, EducatorWorkingHour, EducatorAttendance, AttendanceSession, ChildRoom, ChildAttendance, ChildAttendanceHistory
+from datetime import datetime
 
+def parse_date(val):
+    if not val:
+        return None
+    try:
+        return datetime.strptime(val, "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return None
 management_bp = Blueprint(
     "management",
     __name__,
@@ -157,8 +165,10 @@ def educators():
                     "email": e.email,
                     "role": e.role,
                     "status": e.status,
-                    "start_date": e.start_date,
-                    "end_date": e.end_date,
+                    "start_date": e.start_date.isoformat() if e.start_date else None,  # fix
+                    "end_date": e.end_date.isoformat() if e.end_date else None,        # fix
+                    # "start_date": e.start_date,
+                    # "end_date": e.end_date,
                     "room_ids": room_ids,
                     "rooms": room_names,
                 })
@@ -177,8 +187,10 @@ def educators():
                 email=data.get("email"),
                 role=data.get("role"),
                 status="enabled",
-                start_date=data.get("start_date"),
-                end_date=data.get("end_date"),
+                # start_date=data.get("start_date"),
+                # end_date=data.get("end_date"),
+                start_date=parse_date(data.get("start_date")),  # fix
+                end_date=parse_date(data.get("end_date")),      # fix
             )
 
             db.session.add(educator)
@@ -207,8 +219,10 @@ def educators():
             educator.phone = data.get("phone")
             educator.email = data.get("email")
             educator.role = data.get("role")
-            educator.start_date = data.get("start_date")
-            educator.end_date = data.get("end_date")
+            # educator.start_date = data.get("start_date")
+            # educator.end_date = data.get("end_date")
+            educator.start_date = parse_date(data.get("start_date"))  # fix
+            educator.end_date = parse_date(data.get("end_date"))      # fix
 
             db.session.commit()
 
