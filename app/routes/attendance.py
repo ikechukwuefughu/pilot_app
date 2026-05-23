@@ -187,8 +187,7 @@ def get_session_by_educator(educator_id):
         )
 
     return jsonify(None)
-
-
+      
 # ==========================================================
 # Sessions Management (SQLAlchemy)
 # ==========================================================
@@ -228,7 +227,39 @@ def create_session():
             500,
         )
 
+@attendance_bp.route("/api/attendance/session/<int:session_id>", methods=["GET"])
+def get_session(session_id):
+    try:
+        session = db.session.get(AttendanceSession, session_id)
+        
+        if not session:
+            return jsonify({
+                "success": False,
+                "message": "Session not found"
+            }), 404
 
+        return jsonify({
+            "success": True,
+            "session": {
+                "session_id": session.session_id,
+                "room_id": session.room_id,
+                "educator_id": session.educator_id,
+                "session_type": session.session_type,
+                "start_time": session.start_time.isoformat() if session.start_time else None,
+                "end_time": session.end_time.isoformat() if session.end_time else None,
+                "room_name": session.room.room_name if session.room else None,
+                "educator_name": session.educator.educator_name if session.educator else None,
+            }
+        })
+
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "success": False,
+            "message": str(e),
+            "detail": traceback.format_exc()
+        }), 500
+        
 # ==========================================================
 # Save attendance register with full audit history (SQLAlchemy)
 # ==========================================================
