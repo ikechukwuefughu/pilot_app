@@ -89,7 +89,7 @@ def rooms():
             rows = (
                 db.session.query(Room, Branch)
                 .outerjoin(Branch, Room.branch_id == Branch.branch_id)
-                .order_by(Branch.branch_name, Room.room_name)
+                # .order_by(Branch.branch_name, Room.room_name)
                 .all()
             )
             result = []
