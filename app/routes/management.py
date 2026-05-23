@@ -95,7 +95,6 @@ def rooms():
                 .order_by(Branch.branch_name, Room.room_name)
                 .all()
             )
-
             result = []
             for room, branch in rows:
                 result.append({
@@ -106,41 +105,29 @@ def rooms():
                     "branch_id": room.branch_id,
                     "branch_name": branch.branch_name if branch else None,
                 })
-
             return jsonify(result)
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "success": False,
-            "message": str(e),
-            "detail": traceback.format_exc()
-        }), 500
 
         # ----------------------------------------------
         # CREATE ROOM
         # ----------------------------------------------
         data = request.get_json() or {}
-
         room = Room(
             branch_id=data.get("branch_id"),
             room_name=data.get("name"),
             room_capacity=data.get("capacity"),
-            room_type=data.get("type", "General"),
+            room_type=data.get("type"),
         )
-
         db.session.add(room)
         db.session.commit()
-
-        return jsonify({
-            "success": True,
-            "message": "Room created successfully",
-        })
+        return jsonify({"success": True, "message": "Room created successfully"})
 
     except Exception as e:
         db.session.rollback()
+        import traceback
         return jsonify({
             "success": False,
             "message": str(e),
+            "detail": traceback.format_exc()
         }), 500
 
 # ==========================================================
