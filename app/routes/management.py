@@ -108,6 +108,13 @@ def rooms():
                 })
 
             return jsonify(result)
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "success": False,
+            "message": str(e),
+            "detail": traceback.format_exc()
+        }), 500
 
         # ----------------------------------------------
         # CREATE ROOM
