@@ -315,6 +315,7 @@ def assign_rooms():
         return jsonify({
             "success": False,
             "message": str(e),
+            "detail": traceback.format_exc()
         }), 500
 
 
