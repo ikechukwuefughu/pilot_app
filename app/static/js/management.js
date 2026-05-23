@@ -249,16 +249,32 @@ async function saveBranch(e) {
 }
 
 /* ================= ROOM ================= */
+// async function loadRooms() {
+
+//     const data =
+//         await fetch(API.rooms).then(r => r.json());
+
+//     STATE.rooms = data.map(r => ({
+//         id: r.room_id || r.id,
+//         name: r.name || r.room_name,
+//         branch_id: r.branch_id
+//     }));
+// }
 async function loadRooms() {
-
-    const data =
-        await fetch(API.rooms).then(r => r.json());
-
-    STATE.rooms = data.map(r => ({
-        id: r.room_id || r.id,
-        name: r.name || r.room_name,
-        branch_id: r.branch_id
-    }));
+    const res = await fetch(API.rooms);
+    const text = await res.text();
+    console.log("ROOMS RAW:", text);
+    
+    try {
+        const data = JSON.parse(text);
+        STATE.rooms = data.map(r => ({
+            id: r.room_id || r.id,
+            name: r.name || r.room_name,
+            branch_id: r.branch_id
+        }));
+    } catch (e) {
+        console.error("Rooms parse failed:", e);
+    }
 }
 
 async function saveRoom(e) {
