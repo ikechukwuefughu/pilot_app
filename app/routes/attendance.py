@@ -163,31 +163,59 @@ def get_room_by_educator(educator_id):
 # ==========================================================
 # Filter Session by Educator (SQLAlchemy)
 # ==========================================================
-@attendance_bp.route(
-    "/api/attendance/session/<int:educator_id>",
-    methods=["GET"],
-)
-def get_session_by_educator(educator_id):
-    session = (
-        db.session.query(AttendanceSession)
-        .filter(AttendanceSession.educator_id == educator_id)
-        .order_by(AttendanceSession.created_at.desc())
-        .first()
-    )
+# @attendance_bp.route(
+#     "/api/attendance/session/<int:educator_id>",
+#     methods=["GET"],
+# )
+# def get_session_by_educator(educator_id):
+#     session = (
+#         db.session.query(AttendanceSession)
+#         .filter(AttendanceSession.educator_id == educator_id)
+#         .order_by(AttendanceSession.created_at.desc())
+#         .first()
+#     )
 
-    if session:
-        return jsonify(
-            {
-                "session_id": session.session_id,
-                "session_type": session.session_type,
-                "room_id": session.room_id,
-                "start_time": session.start_time,
-                "end_time": session.end_time,
-            }
+#     if session:
+#         return jsonify(
+#             {
+#                 "session_id": session.session_id,
+#                 "session_type": session.session_type,
+#                 "room_id": session.room_id,
+#                 "start_time": session.start_time,
+#                 "end_time": session.end_time,
+#             }
+#         )
+
+#     return jsonify(None)
+
+@attendance_bp.route("/api/attendance/session/<int:educator_id>",methods=["GET"],)
+def get_session_by_educator(educator_id):
+    try:
+        session = (
+            db.session.query(AttendanceSession)
+            .filter(AttendanceSession.educator_id == educator_id)
+            .order_by(AttendanceSession.created_at.desc())
+            .first()
         )
 
-    return jsonify(None)
-      
+        if not session:
+            return jsonify(None)
+
+        return jsonify({
+            "session_id": session.session_id,
+            "session_type": session.session_type,
+            "room_id": session.room_id,
+            "start_time": session.start_time.isoformat() if session.start_time else None,
+            "end_time": session.end_time.isoformat() if session.end_time else None,
+        })
+
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "success": False,
+            "message": str(e),
+            "detail": traceback.format_exc()
+        }), 500
 # ==========================================================
 # Sessions Management (SQLAlchemy)
 # ==========================================================
@@ -227,35 +255,35 @@ def create_session():
             500,
         )
 
-@attendance_bp.route("/api/attendance/session/<int:educator_id>", methods=["GET"])
-def get_session(educator_id):
-    try:
-        session = (
-            db.session.query(AttendanceSession)
-            .filter(AttendanceSession.educator_id == educator_id)
-            .order_by(AttendanceSession.created_at.desc())
-            .first()
-        )
+# @attendance_bp.route("/api/attendance/session/<int:educator_id>", methods=["GET"])
+# def get_session(educator_id):
+#     try:
+#         session = (
+#             db.session.query(AttendanceSession)
+#             .filter(AttendanceSession.educator_id == educator_id)
+#             .order_by(AttendanceSession.created_at.desc())
+#             .first()
+#         )
 
-        if not session:
-            return jsonify(None)  # JS checks: if (session) { ... }
+#         if not session:
+#             return jsonify(None)  # JS checks: if (session) { ... }
 
-        return jsonify({
-            "session_id": session.session_id,
-            "room_id": session.room_id,
-            "educator_id": session.educator_id,
-            "session_type": session.session_type,
-            "start_time": session.start_time.isoformat() if session.start_time else None,
-            "end_time": session.end_time.isoformat() if session.end_time else None,
-        })
+#         return jsonify({
+#             "session_id": session.session_id,
+#             "room_id": session.room_id,
+#             "educator_id": session.educator_id,
+#             "session_type": session.session_type,
+#             "start_time": session.start_time.isoformat() if session.start_time else None,
+#             "end_time": session.end_time.isoformat() if session.end_time else None,
+#         })
 
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "success": False,
-            "message": str(e),
-            "detail": traceback.format_exc()
-        }), 500
+#     except Exception as e:
+#         import traceback
+#         return jsonify({
+#             "success": False,
+#             "message": str(e),
+#             "detail": traceback.format_exc()
+#         }), 500
         
 # ==========================================================
 # Save attendance register with full audit history (SQLAlchemy)
