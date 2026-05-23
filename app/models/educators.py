@@ -15,7 +15,7 @@ class Educator(db.Model):
     email = db.Column(db.Unicode(254), index=True)
 
     role = db.Column(
-        db.Unicode(20),
+        db.Unicode(50),
         nullable=False,
         server_default=db.text("'Lead Educator'"),
         index=True,
@@ -24,7 +24,7 @@ class Educator(db.Model):
     status = db.Column(
         db.Unicode(20),
         nullable=False,
-        server_default=db.text("'enabled'"),
+        # server_default=db.text("'enabled'"),
         index=True,
     )
 
