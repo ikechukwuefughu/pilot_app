@@ -34,7 +34,12 @@ class EducatorRoom(db.Model):
         back_populates="educator_rooms",
         lazy="selectin",
     )
-    
+
+    is_active = db.Column(
+        db.Boolean,
+        nullable=False,
+        server_default=db.text("1"),
+    )
     assigned_at = db.Column(
         db.DateTime,
         nullable=False,
