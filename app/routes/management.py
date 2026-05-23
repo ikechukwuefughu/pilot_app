@@ -180,7 +180,7 @@ def educators():
         # ----------------------------------------------
         if request.method == "POST":
             data = request.get_json() or {}
-
+            print("PUT data received:", data)  # check Render logs
             educator = Educator(
                 educator_name=data.get("name"),
                 phone=data.get("phone"),
