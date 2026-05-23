@@ -756,27 +756,62 @@ async function saveAttendance() {
 /* ================= ASSIGNMENT ================= */
 async function saveAssignment() {
 
-    await fetch(API.assign, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            educator_id:
-                // document.getElementById("assignEducator").value,
-                parseInt(document.getElementById("assignEducator").value),
+    const educatorId = parseInt(document.getElementById("assignEducator").value);
+    const roomIds = Array.from(
+        document.getElementById("assignRoom").selectedOptions
+    ).map(o => parseInt(o.value));
 
-            room_ids: Array.from(
-                document.getElementById("assignRoom")
-                    .selectedOptions
-            ).map(o => parseInt(o.value))
+    console.log("educator_id:", educatorId);
+    console.log("room_ids:", roomIds);
+
+    if (!educatorId) {
+        alert("No educator selected");
+        return;
+    }
+
+    if (roomIds.length === 0) {
+        alert("No room selected");
+        return;
+    }
+
+    const res = await fetch(API.assign, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            educator_id: educatorId,
+            room_ids: roomIds
         })
     });
 
-    closeAllModals();
+    const result = await res.json();
+    console.log("assign result:", result);
 
+    closeAllModals();
     await refreshAll();
 }
+// async function saveAssignment() {
+
+//     await fetch(API.assign, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify({
+//             educator_id:
+//                 // document.getElementById("assignEducator").value,
+//                 parseInt(document.getElementById("assignEducator").value),
+
+//             room_ids: Array.from(
+//                 document.getElementById("assignRoom")
+//                     .selectedOptions
+//             ).map(o => parseInt(o.value))
+//         })
+//     });
+
+//     closeAllModals();
+
+//     await refreshAll();
+// }
 
 /* ================= DROPDOWNS ================= */
 function fillDropdowns() {
