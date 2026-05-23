@@ -978,27 +978,27 @@ function renderBranches() {
         `).join("");
 }
 
-function renderRoomsByBranch(branchId) {
+// function renderRoomsByBranch(branchId) {
 
-    const roomList = document.getElementById("roomList");
+//     const roomList = document.getElementById("roomList");
 
-    if (!branchId) {
-        roomList.innerHTML = `<option value="">Select Branch First</option>`;
-        return;
-    }
+//     if (!branchId) {
+//         roomList.innerHTML = `<option value="">Select Branch First</option>`;
+//         return;
+//     }
 
-    const filtered = STATE.rooms.filter(r =>
-        String(r.branch_id) === String(branchId)
-    );
+//     const filtered = STATE.rooms.filter(r =>
+//         String(r.branch_id) === String(branchId)
+//     );
 
-    roomList.innerHTML = filtered.length
-        ? filtered.map(r => `
-            <option value="${r.id}">
-                ${r.name}
-            </option>
-        `).join("")
-        : `<option value="">No rooms in this branch</option>`;
-}
+//     roomList.innerHTML = filtered.length
+//         ? filtered.map(r => `
+//             <option value="${r.id}">
+//                 ${r.name}
+//             </option>
+//         `).join("")
+//         : `<option value="">No rooms in this branch</option>`;
+// }
 
 function onBranchChange(e) {
 
@@ -1009,19 +1009,11 @@ function onBranchChange(e) {
 
     if (!roomSelect) return;
 
-    // RESET
     if (!branchId) {
-
-        roomSelect.innerHTML = `
-            <option value="">
-                Select Room
-            </option>
-        `;
-
+        roomSelect.innerHTML = `<option value="">Select Room</option>`;
         return;
     }
 
-    // FILTER ROOMS
     const filteredRooms = STATE.rooms.filter(r =>
         String(r.branch_id) === String(branchId)
     );
@@ -1032,13 +1024,47 @@ function onBranchChange(e) {
                 ${r.name}
             </option>
         `).join("")
-        : `
-            <option value="">
-                No Rooms Found
-            </option>
-        `;
-    renderRoomsByBranch(branchId);
+        : `<option value="">No Rooms Found</option>`;
 }
+// function onBranchChange(e) {
+
+//     const branchId = e.target.value;
+
+//     const roomSelect =
+//         document.getElementById("assignRoom");
+
+//     if (!roomSelect) return;
+
+//     // RESET
+//     if (!branchId) {
+
+//         roomSelect.innerHTML = `
+//             <option value="">
+//                 Select Room
+//             </option>
+//         `;
+
+//         return;
+//     }
+
+//     // FILTER ROOMS
+//     const filteredRooms = STATE.rooms.filter(r =>
+//         String(r.branch_id) === String(branchId)
+//     );
+
+//     roomSelect.innerHTML = filteredRooms.length
+//         ? filteredRooms.map(r => `
+//             <option value="${r.id}">
+//                 ${r.name}
+//             </option>
+//         `).join("")
+//         : `
+//             <option value="">
+//                 No Rooms Found
+//             </option>
+//         `;
+//     renderRoomsByBranch(branchId);
+// }
 
 function renderRooms() {
 
