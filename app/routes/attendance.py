@@ -227,29 +227,26 @@ def create_session():
             500,
         )
 
-@attendance_bp.route("/api/attendance/session/<int:session_id>", methods=["GET"])
-def get_session(session_id):
+@attendance_bp.route("/api/attendance/session/<int:educator_id>", methods=["GET"])
+def get_session(educator_id):
     try:
-        session = db.session.get(AttendanceSession, session_id)
-        
+        session = (
+            db.session.query(AttendanceSession)
+            .filter(AttendanceSession.educator_id == educator_id)
+            .order_by(AttendanceSession.created_at.desc())
+            .first()
+        )
+
         if not session:
-            return jsonify({
-                "success": False,
-                "message": "Session not found"
-            }), 404
+            return jsonify(None)  # JS checks: if (session) { ... }
 
         return jsonify({
-            "success": True,
-            "session": {
-                "session_id": session.session_id,
-                "room_id": session.room_id,
-                "educator_id": session.educator_id,
-                "session_type": session.session_type,
-                "start_time": session.start_time.isoformat() if session.start_time else None,
-                "end_time": session.end_time.isoformat() if session.end_time else None,
-                "room_name": session.room.room_name if session.room else None,
-                "educator_name": session.educator.educator_name if session.educator else None,
-            }
+            "session_id": session.session_id,
+            "room_id": session.room_id,
+            "educator_id": session.educator_id,
+            "session_type": session.session_type,
+            "start_time": session.start_time.isoformat() if session.start_time else None,
+            "end_time": session.end_time.isoformat() if session.end_time else None,
         })
 
     except Exception as e:
