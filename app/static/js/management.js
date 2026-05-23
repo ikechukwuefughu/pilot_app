@@ -276,7 +276,9 @@ async function saveRoom(e) {
             name:
                 document.getElementById("roomName").value,
             capacity:
-                document.getElementById("roomCapacity").value
+                document.getElementById("roomCapacity").value,
+            type: 
+                document.getElementById("roomType").value
         })
     });
 
